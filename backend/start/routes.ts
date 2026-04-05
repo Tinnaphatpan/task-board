@@ -22,6 +22,8 @@ router
     router
       .group(() => {
         router.get('/profile', [controllers.Profile, 'show'])
+        router.put('/profile', [controllers.Profile, 'update'])
+        router.post('/avatar', [controllers.Profile, 'uploadAvatar'])
       })
       .prefix('account')
       .as('profile')
@@ -76,6 +78,11 @@ router
         router.post('/tasks/:taskId/subtasks', [controllers.Subtasks, 'store'])
         router.patch('/subtasks/:id/toggle', [controllers.Subtasks, 'toggle'])
         router.delete('/subtasks/:id', [controllers.Subtasks, 'destroy'])
+
+        // Attachments (nested under task)
+        router.get('/tasks/:taskId/attachments', [controllers.TaskAttachments, 'index'])
+        router.post('/tasks/:taskId/attachments', [controllers.TaskAttachments, 'store'])
+        router.delete('/attachments/:id', [controllers.TaskAttachments, 'destroy'])
       })
       .prefix('boards')
       .as('boards')
