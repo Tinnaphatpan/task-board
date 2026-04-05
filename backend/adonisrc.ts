@@ -54,7 +54,8 @@ export default defineConfig({
     () => import('@adonisjs/auth/auth_provider'),
     () => import('@adonisjs/drive/drive_provider'),
     () => import('#providers/api_provider'),
-    () => import('@adonisjs/transmit/transmit_provider')
+    () => import('@adonisjs/transmit/transmit_provider'),
+    () => import('@adonisjs/mail/mail_provider')
   ],
 
   /*
