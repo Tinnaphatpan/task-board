@@ -50,6 +50,9 @@ router
         // Activity logs
         router.get('/:boardId/activity', [controllers.ActivityLogs, 'index'])
 
+        // Stats
+        router.get('/:boardId/stats', [controllers.BoardStats, 'index'])
+
         // Board members
         router.get('/:boardId/members', [controllers.BoardMembers, 'index'])
         router.post('/:boardId/members', [controllers.BoardMembers, 'store'])
