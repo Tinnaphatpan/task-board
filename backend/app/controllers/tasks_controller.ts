@@ -23,8 +23,9 @@ export default class TasksController {
     const column = await taskService.getColumnById(params.columnId)
     if (!column) return response.notFound({ message: 'ไม่พบ column นี้' })
 
-    const isMember = await boardService.isBoardMember(column.boardId!, user.id)
-    if (!isMember) return response.forbidden({ message: 'ไม่มีสิทธิ์เข้าถึง' })
+    const role = await boardService.getBoardMemberRole(column.boardId!, user.id)
+    if (!role) return response.forbidden({ message: 'ไม่มีสิทธิ์เข้าถึง' })
+    if (role === 'viewer') return response.forbidden({ message: 'Viewer ไม่สามารถสร้าง task ได้' })
 
     const { title, description, priority, dueDate, assigneeId } = request.only([
       'title', 'description', 'priority', 'dueDate', 'assigneeId',

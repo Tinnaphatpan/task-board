@@ -48,6 +48,12 @@ router
         // Activity logs
         router.get('/:boardId/activity', [controllers.ActivityLogs, 'index'])
 
+        // Board members
+        router.get('/:boardId/members', [controllers.BoardMembers, 'index'])
+        router.post('/:boardId/members', [controllers.BoardMembers, 'store'])
+        router.put('/:boardId/members/:userId', [controllers.BoardMembers, 'update'])
+        router.delete('/:boardId/members/:userId', [controllers.BoardMembers, 'destroy'])
+
         // Columns (nested under board)
         router.get('/:boardId/columns', [controllers.Columns, 'index'])
         router.post('/:boardId/columns', [controllers.Columns, 'store'])

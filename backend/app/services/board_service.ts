@@ -56,6 +56,43 @@ export class BoardService {
     return board?.ownerId === userId
   }
 
+  async isBoardAdmin(boardId: number, userId: number): Promise<boolean> {
+    const isOwner = await this.isBoardOwner(boardId, userId)
+    if (isOwner) return true
+    const member = await BoardMember.query()
+      .where('board_id', boardId)
+      .where('user_id', userId)
+      .first()
+    return member?.role === 'admin'
+  }
+
+  async getBoardMemberRole(boardId: number, userId: number): Promise<string | null> {
+    const board = await Board.find(boardId)
+    if (board?.ownerId === userId) return 'owner'
+    const member = await BoardMember.query()
+      .where('board_id', boardId)
+      .where('user_id', userId)
+      .first()
+    return member?.role ?? null
+  }
+
+  async listBoardMembers(boardId: number) {
+    const board = await Board.query().where('id', boardId).preload('owner').firstOrFail()
+    const members = await BoardMember.query()
+      .where('board_id', boardId)
+      .preload('user')
+    const result = [
+      { id: board.owner.id, fullName: board.owner.fullName, email: board.owner.email, role: 'owner' },
+      ...members.map((m) => ({
+        id: m.user.id,
+        fullName: m.user.fullName,
+        email: m.user.email,
+        role: m.role,
+      })),
+    ]
+    return result
+  }
+
   private async createDefaultColumns(boardId: number): Promise<void> {
     const defaultColumns = [
       { name: 'To Do', position: 0 },
