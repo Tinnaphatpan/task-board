@@ -49,6 +49,22 @@ interface Comment {
   user: { id: number; fullName: string | null; email: string }
 }
 
+interface Attachment {
+  id: number
+  originalName: string
+  mimeType: string
+  size: number
+  url: string
+  createdAt: string
+}
+
+interface BoardMember {
+  id: number
+  fullName: string | null
+  email: string
+  role: string
+}
+
 interface ActivityLog {
   id: number
   action: string
@@ -71,6 +87,11 @@ const loading = ref(true)
 const allUsers = ref<User[]>([])
 const activityLogs = ref<ActivityLog[]>([])
 const showActivityLog = ref(false)
+const showMembers = ref(false)
+const boardMembers = ref<BoardMember[]>([])
+const attachments = ref<Attachment[]>([])
+const uploadingFile = ref(false)
+const attachmentInput = ref<HTMLInputElement | null>(null)
 
 // Column modal
 const showColumnModal = ref(false)
@@ -118,6 +139,7 @@ async function loadBoard() {
     allUsers.value = usersData
     await loadAllTasks()
     loadActivityLogs()
+    loadBoardMembers()
   } catch {
     board.value = null
   } finally {
@@ -142,6 +164,14 @@ async function loadActivityLogs() {
     activityLogs.value = await get<ActivityLog[]>(`/api/v1/boards/${boardId}/activity`)
   } catch {
     activityLogs.value = []
+  }
+}
+
+async function loadBoardMembers() {
+  try {
+    boardMembers.value = await get<BoardMember[]>(`/api/v1/boards/${boardId}/members`)
+  } catch {
+    boardMembers.value = []
   }
 }
 
@@ -218,12 +248,48 @@ async function openTaskDetail(task: Task) {
   editTaskForm.dueDate = task.dueDate ?? ''
   editTaskForm.assigneeId = task.assigneeId ?? null
   showTaskDetail.value = true
-  const [subtasksData, commentsData] = await Promise.all([
+  const [subtasksData, commentsData, attachmentsData] = await Promise.all([
     get<Subtask[]>(`/api/v1/boards/tasks/${task.id}/subtasks`),
     get<Comment[]>(`/api/v1/boards/tasks/${task.id}/comments`),
+    get<Attachment[]>(`/api/v1/boards/tasks/${task.id}/attachments`),
   ])
   subtasks.value = subtasksData
   comments.value = commentsData
+  attachments.value = attachmentsData
+}
+
+async function handleFileUpload(event: Event) {
+  if (!selectedTask.value) return
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  uploadingFile.value = true
+  try {
+    const config = useRuntimeConfig()
+    const token = useCookie<string | null>('auth_token')
+    const formData = new FormData()
+    formData.append('file', file)
+    const res = await fetch(
+      `${config.public.apiBase}/api/v1/boards/tasks/${selectedTask.value.id}/attachments`,
+      { method: 'POST', headers: { Authorization: `Bearer ${token.value}` }, body: formData }
+    )
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || 'Upload failed')
+    attachments.value.unshift(data)
+  } finally {
+    uploadingFile.value = false
+  }
+}
+
+async function deleteAttachment(attachment: Attachment) {
+  await del(`/api/v1/boards/attachments/${attachment.id}`)
+  attachments.value = attachments.value.filter((a) => a.id !== attachment.id)
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
 async function saveTaskEdit() {
@@ -375,6 +441,14 @@ function formatShortDate(dateStr: string): string {
         placeholder="ค้นหา task..."
         class="w-48 px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-sm text-white placeholder:text-gray-500 outline-none focus:border-indigo-500 transition"
       />
+      <!-- Members toggle -->
+      <button
+        @click="showMembers = !showMembers; showActivityLog = false"
+        class="px-3 py-1.5 rounded-lg text-sm border transition"
+        :class="showMembers ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'"
+      >
+        👥 สมาชิก
+      </button>
       <!-- Calendar link -->
       <NuxtLink
         :to="`/boards/${boardId}/calendar`"
@@ -384,7 +458,7 @@ function formatShortDate(dateStr: string): string {
       </NuxtLink>
       <!-- Activity log toggle -->
       <button
-        @click="showActivityLog = !showActivityLog"
+        @click="showActivityLog = !showActivityLog; showMembers = false"
         class="px-3 py-1.5 rounded-lg text-sm border transition"
         :class="showActivityLog ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'"
       >
@@ -508,6 +582,40 @@ function formatShortDate(dateStr: string): string {
           </button>
         </template>
       </div>
+
+      <!-- Members Sidebar -->
+      <transition name="slide">
+        <div
+          v-if="showMembers"
+          class="w-80 shrink-0 bg-gray-900 border-l border-gray-800 flex flex-col overflow-hidden"
+        >
+          <div class="px-4 py-3 border-b border-gray-800 flex items-center justify-between">
+            <h3 class="font-semibold text-sm">สมาชิก ({{ boardMembers.length }})</h3>
+            <button @click="showMembers = false" class="text-gray-500 hover:text-white text-xs">✕</button>
+          </div>
+          <div class="flex-1 overflow-y-auto px-4 py-3 space-y-2">
+            <div v-for="member in boardMembers" :key="member.id" class="flex items-center gap-3 py-2">
+              <div class="w-8 h-8 rounded-full bg-indigo-700 flex items-center justify-center text-xs font-bold shrink-0">
+                {{ (member.fullName || member.email)[0].toUpperCase() }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-white truncate">{{ member.fullName || member.email }}</p>
+                <p class="text-xs text-gray-500 truncate">{{ member.email }}</p>
+              </div>
+              <span class="text-xs px-2 py-0.5 rounded-full shrink-0"
+                :class="{
+                  'bg-purple-900/40 text-purple-400': member.role === 'owner',
+                  'bg-indigo-900/40 text-indigo-400': member.role === 'admin',
+                  'bg-gray-800 text-gray-400': member.role === 'member',
+                  'bg-gray-800 text-gray-600': member.role === 'viewer',
+                }"
+              >
+                {{ member.role }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </transition>
 
       <!-- Activity Log Sidebar -->
       <transition name="slide">
@@ -637,6 +745,34 @@ function formatShortDate(dateStr: string): string {
                 <button @click="addSubtask" :disabled="addingSubtask" class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg text-xs transition disabled:opacity-50">
                   เพิ่ม
                 </button>
+              </div>
+            </div>
+
+            <!-- Attachments -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-xs font-medium text-gray-400">ไฟล์แนบ ({{ attachments.length }})</label>
+                <button
+                  @click="attachmentInput?.click()"
+                  :disabled="uploadingFile"
+                  class="text-xs text-indigo-400 hover:text-indigo-300 transition disabled:opacity-50"
+                >
+                  {{ uploadingFile ? 'กำลังอัปโหลด...' : '+ แนบไฟล์' }}
+                </button>
+              </div>
+              <input ref="attachmentInput" type="file" class="hidden" @change="handleFileUpload" />
+              <div class="space-y-1.5 max-h-32 overflow-y-auto">
+                <div v-if="attachments.length === 0" class="text-xs text-gray-600">ยังไม่มีไฟล์แนบ</div>
+                <div v-for="att in attachments" :key="att.id" class="flex items-center gap-2 bg-gray-800 rounded-lg px-3 py-2 group">
+                  <span class="text-xs flex-1 truncate text-gray-300">{{ att.originalName }}</span>
+                  <span class="text-[10px] text-gray-500 shrink-0">{{ formatFileSize(att.size) }}</span>
+                  <a
+                    :href="`${useRuntimeConfig().public.apiBase}${att.url}`"
+                    target="_blank"
+                    class="text-[10px] text-indigo-400 hover:text-indigo-300 shrink-0"
+                  >↓</a>
+                  <button @click="deleteAttachment(att)" class="text-gray-700 hover:text-red-400 text-xs opacity-0 group-hover:opacity-100 transition shrink-0">✕</button>
+                </div>
               </div>
             </div>
 
