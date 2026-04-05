@@ -1,51 +1,29 @@
+import env from '#start/env'
 import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/lucid'
 
 const dbConfig = defineConfig({
-  /**
-   * Default connection used for all queries.
-   */
-  connection: 'sqlite',
+  connection: 'pg',
 
   connections: {
-    /**
-     * SQLite connection (default).
-     */
-    sqlite: {
-      client: 'better-sqlite3',
-
+    pg: {
+      client: 'pg',
       connection: {
-        filename: app.tmpPath('db.sqlite3'),
+        host: env.get('PG_HOST'),
+        port: env.get('PG_PORT'),
+        user: env.get('PG_USER'),
+        password: env.get('PG_PASSWORD'),
+        database: env.get('PG_DB_NAME'),
       },
-
-      /**
-       * Required by Knex for SQLite defaults.
-       */
-      useNullAsDefault: true,
-
       migrations: {
-        /**
-         * Sort migration files naturally by filename.
-         */
         naturalSort: true,
-
-        /**
-         * Paths containing migration files.
-         */
         paths: ['database/migrations'],
       },
-
       schemaGeneration: {
-        /**
-         * Enable schema generation from Lucid models.
-         */
         enabled: true,
-
-        /**
-         * Custom schema rules file paths.
-         */
         rulesPaths: ['./database/schema_rules.js'],
       },
+      debug: app.inDev,
     },
 
     /**
