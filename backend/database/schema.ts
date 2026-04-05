@@ -32,6 +32,84 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class BoardMemberSchema extends BaseModel {
+  static $columns = ['boardId', 'createdAt', 'id', 'role', 'updatedAt', 'userId'] as const
+  $columns = BoardMemberSchema.$columns
+  @column()
+  declare boardId: number | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare role: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number | null
+}
+
+export class BoardSchema extends BaseModel {
+  static $columns = ['createdAt', 'description', 'id', 'name', 'ownerId', 'updatedAt'] as const
+  $columns = BoardSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare name: string
+  @column()
+  declare ownerId: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class ColumnSchema extends BaseModel {
+  static $columns = ['boardId', 'createdAt', 'id', 'name', 'position', 'updatedAt'] as const
+  $columns = ColumnSchema.$columns
+  @column()
+  declare boardId: number | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare name: string
+  @column()
+  declare position: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class TaskSchema extends BaseModel {
+  static $columns = ['assigneeId', 'columnId', 'createdAt', 'createdBy', 'description', 'dueDate', 'id', 'position', 'priority', 'title', 'updatedAt'] as const
+  $columns = TaskSchema.$columns
+  @column()
+  declare assigneeId: number | null
+  @column()
+  declare columnId: number | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare createdBy: number | null
+  @column()
+  declare description: string | null
+  @column.date()
+  declare dueDate: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare position: number | null
+  @column()
+  declare priority: string | null
+  @column()
+  declare title: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class UserSchema extends BaseModel {
   static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
   $columns = UserSchema.$columns
