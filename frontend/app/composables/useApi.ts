@@ -14,8 +14,9 @@ export function useApi() {
       ...options,
       headers,
     })
-    const data = await res.json()
-    if (!res.ok) throw new Error(data.message || data.error || 'เกิดข้อผิดพลาด')
+    const json = await res.json()
+    if (!res.ok) throw new Error(json.message || json.error || 'เกิดข้อผิดพลาด')
+    const data = json.data ?? json
     return data as T
   }
 

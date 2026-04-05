@@ -5,7 +5,7 @@ const { post } = useApi()
 const authStore = useAuthStore()
 const router = useRouter()
 
-const form = reactive({ fullName: '', email: '', password: '' })
+const form = reactive({ fullName: '', email: '', password: '', passwordConfirmation: '' })
 const error = ref('')
 const loading = ref(false)
 
@@ -64,6 +64,17 @@ async function handleRegister() {
             <label class="block text-sm font-medium text-gray-300 mb-1.5">รหัสผ่าน</label>
             <input
               v-model="form.password"
+              type="password"
+              required
+              placeholder="••••••••"
+              class="w-full px-4 py-2.5 rounded-xl bg-gray-800 border border-gray-700 text-white placeholder:text-gray-500 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1.5">ยืนยันรหัสผ่าน</label>
+            <input
+              v-model="form.passwordConfirmation"
               type="password"
               required
               placeholder="••••••••"
