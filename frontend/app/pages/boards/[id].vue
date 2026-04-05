@@ -375,6 +375,13 @@ function formatShortDate(dateStr: string): string {
         placeholder="ค้นหา task..."
         class="w-48 px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-sm text-white placeholder:text-gray-500 outline-none focus:border-indigo-500 transition"
       />
+      <!-- Calendar link -->
+      <NuxtLink
+        :to="`/boards/${boardId}/calendar`"
+        class="px-3 py-1.5 rounded-lg text-sm bg-gray-800 border border-gray-700 text-gray-400 hover:text-white transition"
+      >
+        📅 Calendar
+      </NuxtLink>
       <!-- Activity log toggle -->
       <button
         @click="showActivityLog = !showActivityLog"
