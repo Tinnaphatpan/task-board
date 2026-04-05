@@ -7,4 +7,7 @@ export const controllers = {
   AccessToken: () => import('#controllers/access_token_controller'),
   NewAccount: () => import('#controllers/new_account_controller'),
   Profile: () => import('#controllers/profile_controller'),
+  Boards: () => import('#controllers/boards_controller'),
+  Columns: () => import('#controllers/columns_controller'),
+  Tasks: () => import('#controllers/tasks_controller'),
 }
