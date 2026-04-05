@@ -8,10 +8,18 @@ interface Board {
   ownerId: number
 }
 
+interface BoardStats {
+  total: number
+  completionRate: number
+  byPriority: { low: number; medium: number; high: number; none: number }
+  byColumn: { name: string; count: number }[]
+}
+
 const { get, post, del } = useApi()
 const authStore = useAuthStore()
 
 const boards = ref<Board[]>([])
+const statsMap = ref<Record<number, BoardStats>>({})
 const loading = ref(true)
 const showModal = ref(false)
 const form = reactive({ name: '', description: '' })
@@ -24,11 +32,25 @@ async function fetchBoards() {
   loading.value = true
   try {
     boards.value = await get<Board[]>('/api/v1/boards')
+    loadAllStats()
   } catch {
     boards.value = []
   } finally {
     loading.value = false
   }
+}
+
+async function loadAllStats() {
+  await Promise.all(
+    boards.value.map(async (board) => {
+      try {
+        const stats = await get<BoardStats>(`/api/v1/boards/${board.id}/stats`)
+        statsMap.value[board.id] = stats
+      } catch {
+        statsMap.value[board.id] = { total: 0, completionRate: 0, byPriority: { low: 0, medium: 0, high: 0, none: 0 }, byColumn: [] }
+      }
+    })
+  )
 }
 
 async function createBoard() {
@@ -38,6 +60,7 @@ async function createBoard() {
   try {
     const board = await post<Board>('/api/v1/boards', form)
     boards.value.unshift(board)
+    statsMap.value[board.id] = { total: 0, completionRate: 0, byPriority: { low: 0, medium: 0, high: 0, none: 0 }, byColumn: [] }
     showModal.value = false
     form.name = ''
     form.description = ''
@@ -52,6 +75,7 @@ async function deleteBoard(id: number) {
   if (!confirm('ยืนยันลบ board นี้?')) return
   await del(`/api/v1/boards/${id}`)
   boards.value = boards.value.filter((b) => b.id !== id)
+  delete statsMap.value[id]
 }
 </script>
 
@@ -61,7 +85,12 @@ async function deleteBoard(id: number) {
     <nav class="bg-gray-900 border-b border-gray-800 px-6 py-4 flex items-center justify-between">
       <h1 class="text-xl font-bold text-white">Task Board</h1>
       <div class="flex items-center gap-4">
-        <span class="text-gray-400 text-sm">{{ authStore.user?.fullName || authStore.user?.email }}</span>
+        <NuxtLink to="/profile" class="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition">
+          <div class="w-7 h-7 rounded-full bg-indigo-700 flex items-center justify-center text-xs font-bold">
+            {{ (authStore.user?.fullName || authStore.user?.email || '?')[0].toUpperCase() }}
+          </div>
+          {{ authStore.user?.fullName || authStore.user?.email }}
+        </NuxtLink>
         <button @click="authStore.logout()" class="text-sm text-gray-400 hover:text-white transition">
           ออกจากระบบ
         </button>
@@ -85,7 +114,7 @@ async function deleteBoard(id: number) {
 
       <!-- Loading -->
       <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div v-for="i in 3" :key="i" class="h-32 bg-gray-800 rounded-2xl animate-pulse" />
+        <div v-for="i in 3" :key="i" class="h-40 bg-gray-800 rounded-2xl animate-pulse" />
       </div>
 
       <!-- Empty state -->
@@ -99,17 +128,47 @@ async function deleteBoard(id: number) {
         <div
           v-for="board in boards"
           :key="board.id"
-          class="bg-gray-900 border border-gray-800 rounded-2xl p-5 hover:border-indigo-500/50 transition group"
+          class="bg-gray-900 border border-gray-800 rounded-2xl p-5 hover:border-indigo-500/50 transition group flex flex-col"
         >
-          <NuxtLink :to="`/boards/${board.id}`" class="block">
+          <NuxtLink :to="`/boards/${board.id}`" class="block flex-1">
             <h3 class="font-semibold text-white group-hover:text-indigo-400 transition">{{ board.name }}</h3>
             <p v-if="board.description" class="text-gray-400 text-sm mt-1 line-clamp-2">{{ board.description }}</p>
+
+            <!-- Stats -->
+            <div v-if="statsMap[board.id]" class="mt-3 space-y-2">
+              <!-- Completion bar -->
+              <div>
+                <div class="flex justify-between text-xs text-gray-500 mb-1">
+                  <span>{{ statsMap[board.id].total }} tasks</span>
+                  <span>{{ statsMap[board.id].completionRate }}% เสร็จ</span>
+                </div>
+                <div class="w-full bg-gray-800 rounded-full h-1.5">
+                  <div
+                    class="bg-indigo-500 h-1.5 rounded-full transition-all"
+                    :style="{ width: `${statsMap[board.id].completionRate}%` }"
+                  />
+                </div>
+              </div>
+              <!-- Priority breakdown -->
+              <div v-if="statsMap[board.id].total > 0" class="flex gap-1.5">
+                <span v-if="statsMap[board.id].byPriority.high > 0" class="text-[10px] bg-red-900/40 text-red-400 rounded-full px-2 py-0.5">
+                  🔴 {{ statsMap[board.id].byPriority.high }}
+                </span>
+                <span v-if="statsMap[board.id].byPriority.medium > 0" class="text-[10px] bg-yellow-900/40 text-yellow-400 rounded-full px-2 py-0.5">
+                  🟡 {{ statsMap[board.id].byPriority.medium }}
+                </span>
+                <span v-if="statsMap[board.id].byPriority.low > 0" class="text-[10px] bg-green-900/40 text-green-400 rounded-full px-2 py-0.5">
+                  🟢 {{ statsMap[board.id].byPriority.low }}
+                </span>
+              </div>
+            </div>
           </NuxtLink>
-          <div class="flex justify-end mt-4">
-            <button
-              @click="deleteBoard(board.id)"
-              class="text-xs text-gray-600 hover:text-red-400 transition"
-            >
+
+          <div class="flex justify-end mt-4 gap-3">
+            <NuxtLink :to="`/boards/${board.id}/calendar`" class="text-xs text-gray-600 hover:text-indigo-400 transition">
+              📅
+            </NuxtLink>
+            <button @click="deleteBoard(board.id)" class="text-xs text-gray-600 hover:text-red-400 transition">
               ลบ
             </button>
           </div>
@@ -143,18 +202,10 @@ async function deleteBoard(id: number) {
           </div>
           <p v-if="error" class="text-red-400 text-sm">{{ error }}</p>
           <div class="flex gap-3 justify-end pt-2">
-            <button
-              type="button"
-              @click="showModal = false"
-              class="px-4 py-2 rounded-xl text-gray-400 hover:text-white transition text-sm"
-            >
+            <button type="button" @click="showModal = false" class="px-4 py-2 rounded-xl text-gray-400 hover:text-white transition text-sm">
               ยกเลิก
             </button>
-            <button
-              type="submit"
-              :disabled="saving"
-              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-sm font-semibold transition disabled:opacity-50"
-            >
+            <button type="submit" :disabled="saving" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-sm font-semibold transition disabled:opacity-50">
               {{ saving ? 'กำลังสร้าง...' : 'สร้าง' }}
             </button>
           </div>
