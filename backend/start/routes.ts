@@ -27,6 +27,15 @@ router
       .as('profile')
       .use(middleware.auth())
 
+    // Users (search for assignment)
+    router
+      .group(() => {
+        router.get('/', [controllers.Users, 'index'])
+      })
+      .prefix('users')
+      .as('users')
+      .use(middleware.auth())
+
     // Boards
     router
       .group(() => {
@@ -35,6 +44,9 @@ router
         router.get('/:id', [controllers.Boards, 'show'])
         router.put('/:id', [controllers.Boards, 'update'])
         router.delete('/:id', [controllers.Boards, 'destroy'])
+
+        // Activity logs
+        router.get('/:boardId/activity', [controllers.ActivityLogs, 'index'])
 
         // Columns (nested under board)
         router.get('/:boardId/columns', [controllers.Columns, 'index'])
@@ -47,6 +59,17 @@ router
         router.post('/columns/:columnId/tasks', [controllers.Tasks, 'store'])
         router.put('/tasks/:id', [controllers.Tasks, 'update'])
         router.delete('/tasks/:id', [controllers.Tasks, 'destroy'])
+
+        // Comments (nested under task)
+        router.get('/tasks/:taskId/comments', [controllers.Comments, 'index'])
+        router.post('/tasks/:taskId/comments', [controllers.Comments, 'store'])
+        router.delete('/comments/:id', [controllers.Comments, 'destroy'])
+
+        // Subtasks (nested under task)
+        router.get('/tasks/:taskId/subtasks', [controllers.Subtasks, 'index'])
+        router.post('/tasks/:taskId/subtasks', [controllers.Subtasks, 'store'])
+        router.patch('/subtasks/:id/toggle', [controllers.Subtasks, 'toggle'])
+        router.delete('/subtasks/:id', [controllers.Subtasks, 'destroy'])
       })
       .prefix('boards')
       .as('boards')
