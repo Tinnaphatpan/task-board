@@ -76,9 +76,9 @@ interface ActivityLog {
 
 const route = useRoute()
 const { get, post, put, del } = useApi()
-const { $patch: authPatch } = useAuthStore()
 const authStore = useAuthStore()
 const boardId = Number(route.params.id)
+const { notifications } = useBoardEvents(boardId)
 
 const board = ref<Board | null>(null)
 const columns = ref<Column[]>([])
@@ -645,6 +645,19 @@ function formatShortDate(dateStr: string): string {
       </transition>
     </div>
 
+    <!-- Notification toasts -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none">
+      <transition-group name="toast">
+        <div
+          v-for="notif in notifications"
+          :key="notif.id"
+          class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white shadow-xl max-w-xs pointer-events-auto"
+        >
+          {{ notif.message }}
+        </div>
+      </transition-group>
+    </div>
+
     <!-- Add Column Modal -->
     <div v-if="showColumnModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
       <div class="bg-gray-900 rounded-2xl p-6 w-full max-w-sm border border-gray-800">
@@ -856,6 +869,19 @@ function formatShortDate(dateStr: string): string {
 </template>
 
 <style scoped>
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.3s ease;
+}
+.toast-enter-from {
+  opacity: 0;
+  transform: translateX(100%);
+}
+.toast-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
 .slide-enter-active,
 .slide-leave-active {
   transition: width 0.2s ease;
