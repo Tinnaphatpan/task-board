@@ -38,6 +38,19 @@ router
       .as('users')
       .use(middleware.auth())
 
+    // Workspaces
+    router
+      .group(() => {
+        router.get('/', [controllers.Workspaces, 'index'])
+        router.post('/', [controllers.Workspaces, 'store'])
+        router.get('/:id', [controllers.Workspaces, 'show'])
+        router.put('/:id', [controllers.Workspaces, 'update'])
+        router.delete('/:id', [controllers.Workspaces, 'destroy'])
+      })
+      .prefix('workspaces')
+      .as('workspaces')
+      .use(middleware.auth())
+
     // Boards
     router
       .group(() => {
