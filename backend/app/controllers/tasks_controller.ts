@@ -1,9 +1,11 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { BoardService } from '#services/board_service'
 import { TaskService } from '#services/task_service'
+import { NotificationService } from '#services/notification_service'
 
 const boardService = new BoardService()
 const taskService = new TaskService()
+const notificationService = new NotificationService()
 
 export default class TasksController {
   async index({ auth, params, response }: HttpContext) {
@@ -35,6 +37,17 @@ export default class TasksController {
     const task = await taskService.createTask(params.columnId, user.id, {
       title, description, priority, dueDate, assigneeId,
     })
+
+    notificationService.emitBoardUpdate(column.boardId!, 'task:created', {
+      taskId: task.id,
+      taskTitle: task.title,
+      columnId: column.id,
+    })
+
+    if (assigneeId) {
+      notificationService.emitTaskAssigned(column.boardId!, task.id, task.title, assigneeId)
+    }
+
     return response.created(task)
   }
 
@@ -49,6 +62,18 @@ export default class TasksController {
 
     const data = request.only(['title', 'description', 'priority', 'dueDate', 'assigneeId', 'columnId'])
     const updated = await taskService.updateTask(task, data)
+
+    if (data.columnId && data.columnId !== task.columnId) {
+      const newColumn = await taskService.getColumnById(data.columnId)
+      if (newColumn) {
+        notificationService.emitTaskMoved(column!.boardId!, updated.id, updated.title, newColumn.name)
+      }
+    }
+
+    if (data.assigneeId && data.assigneeId !== task.assigneeId) {
+      notificationService.emitTaskAssigned(column!.boardId!, updated.id, updated.title, data.assigneeId)
+    }
+
     return response.ok(updated)
   }
 
@@ -62,6 +87,7 @@ export default class TasksController {
     if (!isMember) return response.forbidden({ message: 'ไม่มีสิทธิ์ลบ task นี้' })
 
     await taskService.deleteTask(task)
+    notificationService.emitBoardUpdate(column!.boardId!, 'task:deleted', { taskId: Number(params.id) })
     return response.ok({ message: 'ลบ task สำเร็จ' })
   }
 }

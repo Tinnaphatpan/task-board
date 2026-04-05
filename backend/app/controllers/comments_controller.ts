@@ -1,6 +1,11 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { CommentService } from '#services/comment_service'
+import { NotificationService } from '#services/notification_service'
+import Task from '#models/task'
+import Column from '#models/column'
 import vine from '@vinejs/vine'
+
+const notificationService = new NotificationService()
 
 const commentService = new CommentService()
 
@@ -24,6 +29,16 @@ export default class CommentsController {
     const { content } = await request.validateUsing(createCommentValidator)
     const comment = await commentService.createComment(Number(params.taskId), user.id, content)
     await comment.load('user')
+
+    const task = await Task.find(Number(params.taskId))
+    if (task) {
+      const column = await Column.find(task.columnId)
+      if (column) {
+        const authorName = user.fullName || user.email
+        notificationService.emitCommentAdded(column.boardId!, task.id, task.title, authorName)
+      }
+    }
+
     return {
       id: comment.id,
       content: comment.content,
