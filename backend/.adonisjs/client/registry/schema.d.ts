@@ -163,6 +163,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['markRead']>>>
     }
   }
+  'boardTemplates.board_templates.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/board-templates'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/board_templates_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/board_templates_controller').default['index']>>>
+    }
+  }
+  'boardTemplates.board_templates.apply': {
+    methods: ["POST"]
+    pattern: '/api/v1/board-templates/:key/apply'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { key: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/board_templates_controller').default['apply']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/board_templates_controller').default['apply']>>>
+    }
+  }
   'workspaces.workspaces.index': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/workspaces'

@@ -17,6 +17,8 @@ export type ScannedRoutes = {
     'notifications.notifications.unread_count': { paramsTuple?: []; params?: {} }
     'notifications.notifications.mark_all_read': { paramsTuple?: []; params?: {} }
     'notifications.notifications.mark_read': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'boardTemplates.board_templates.index': { paramsTuple?: []; params?: {} }
+    'boardTemplates.board_templates.apply': { paramsTuple: [ParamValue]; params: {'key': ParamValue} }
     'workspaces.workspaces.index': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.store': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -66,6 +68,7 @@ export type ScannedRoutes = {
     'search.search.index': { paramsTuple?: []; params?: {} }
     'notifications.notifications.index': { paramsTuple?: []; params?: {} }
     'notifications.notifications.unread_count': { paramsTuple?: []; params?: {} }
+    'boardTemplates.board_templates.index': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.index': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.boards.index': { paramsTuple?: []; params?: {} }
@@ -89,6 +92,7 @@ export type ScannedRoutes = {
     'search.search.index': { paramsTuple?: []; params?: {} }
     'notifications.notifications.index': { paramsTuple?: []; params?: {} }
     'notifications.notifications.unread_count': { paramsTuple?: []; params?: {} }
+    'boardTemplates.board_templates.index': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.index': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.boards.index': { paramsTuple?: []; params?: {} }
@@ -110,6 +114,7 @@ export type ScannedRoutes = {
     'auth.access_token.store': { paramsTuple?: []; params?: {} }
     'auth.access_token.destroy': { paramsTuple?: []; params?: {} }
     'profile.profile.upload_avatar': { paramsTuple?: []; params?: {} }
+    'boardTemplates.board_templates.apply': { paramsTuple: [ParamValue]; params: {'key': ParamValue} }
     'workspaces.workspaces.store': { paramsTuple?: []; params?: {} }
     'boards.boards.store': { paramsTuple?: []; params?: {} }
     'boards.labels.store': { paramsTuple: [ParamValue]; params: {'boardId': ParamValue} }

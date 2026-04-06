@@ -41,6 +41,12 @@ export interface ApiDefinition {
       markRead: typeof routes['notifications.notifications.mark_read']
     }
   }
+  boardTemplates: {
+    boardTemplates: {
+      index: typeof routes['boardTemplates.board_templates.index']
+      apply: typeof routes['boardTemplates.board_templates.apply']
+    }
+  }
   workspaces: {
     workspaces: {
       index: typeof routes['workspaces.workspaces.index']

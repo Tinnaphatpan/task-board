@@ -62,6 +62,16 @@ router
       .as('notifications')
       .use(middleware.auth())
 
+    // Board templates
+    router
+      .group(() => {
+        router.get('/', [controllers.BoardTemplates, 'index'])
+        router.post('/:key/apply', [controllers.BoardTemplates, 'apply'])
+      })
+      .prefix('board-templates')
+      .as('boardTemplates')
+      .use(middleware.auth())
+
     // Workspaces
     router
       .group(() => {

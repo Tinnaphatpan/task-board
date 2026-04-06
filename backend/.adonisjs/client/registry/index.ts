@@ -84,6 +84,18 @@ const routes = {
     tokens: [{"old":"/api/v1/notifications/:id/read","type":0,"val":"api","end":""},{"old":"/api/v1/notifications/:id/read","type":0,"val":"v1","end":""},{"old":"/api/v1/notifications/:id/read","type":0,"val":"notifications","end":""},{"old":"/api/v1/notifications/:id/read","type":1,"val":"id","end":""},{"old":"/api/v1/notifications/:id/read","type":0,"val":"read","end":""}],
     types: placeholder as Registry['notifications.notifications.mark_read']['types'],
   },
+  'boardTemplates.board_templates.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/board-templates',
+    tokens: [{"old":"/api/v1/board-templates","type":0,"val":"api","end":""},{"old":"/api/v1/board-templates","type":0,"val":"v1","end":""},{"old":"/api/v1/board-templates","type":0,"val":"board-templates","end":""}],
+    types: placeholder as Registry['boardTemplates.board_templates.index']['types'],
+  },
+  'boardTemplates.board_templates.apply': {
+    methods: ["POST"],
+    pattern: '/api/v1/board-templates/:key/apply',
+    tokens: [{"old":"/api/v1/board-templates/:key/apply","type":0,"val":"api","end":""},{"old":"/api/v1/board-templates/:key/apply","type":0,"val":"v1","end":""},{"old":"/api/v1/board-templates/:key/apply","type":0,"val":"board-templates","end":""},{"old":"/api/v1/board-templates/:key/apply","type":1,"val":"key","end":""},{"old":"/api/v1/board-templates/:key/apply","type":0,"val":"apply","end":""}],
+    types: placeholder as Registry['boardTemplates.board_templates.apply']['types'],
+  },
   'workspaces.workspaces.index': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/workspaces',

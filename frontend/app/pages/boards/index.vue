@@ -15,6 +15,14 @@ interface BoardStats {
   byColumn: { name: string; count: number }[]
 }
 
+interface Template {
+  key: string
+  name: string
+  description: string
+  columns: string[]
+  columnCount: number
+}
+
 const { get, post, del } = useApi()
 const authStore = useAuthStore()
 
@@ -26,7 +34,16 @@ const form = reactive({ name: '', description: '' })
 const saving = ref(false)
 const error = ref('')
 
-onMounted(fetchBoards)
+// Templates
+const templates = ref<Template[]>([])
+const showTemplates = ref(false)
+const applyingTemplate = ref<string | null>(null)
+const templateBoardName = ref('')
+
+onMounted(async () => {
+  await fetchBoards()
+  templates.value = await get<Template[]>('/api/v1/board-templates').catch(() => [])
+})
 
 async function fetchBoards() {
   loading.value = true
@@ -37,6 +54,21 @@ async function fetchBoards() {
     boards.value = []
   } finally {
     loading.value = false
+  }
+}
+
+async function applyTemplate(template: Template) {
+  applyingTemplate.value = template.key
+  try {
+    const board = await post<Board>(`/api/v1/board-templates/${template.key}/apply`, {
+      boardName: templateBoardName.value || template.name,
+    })
+    boards.value.unshift(board)
+    statsMap.value[board.id] = { total: 0, completionRate: 0, byPriority: { low: 0, medium: 0, high: 0, none: 0 }, byColumn: [] }
+    showTemplates.value = false
+    templateBoardName.value = ''
+  } finally {
+    applyingTemplate.value = null
   }
 }
 
@@ -95,12 +127,20 @@ async function deleteBoard(id: number) {
           <h2 class="text-2xl font-bold">Boards ของฉัน</h2>
           <p class="text-gray-400 mt-1">{{ boards.length }} board</p>
         </div>
-        <button
-          @click="showModal = true"
-          class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-sm font-semibold transition"
-        >
-          + สร้าง Board
-        </button>
+        <div class="flex gap-2">
+          <button
+            @click="showTemplates = true"
+            class="px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl text-sm transition"
+          >
+            📋 Template
+          </button>
+          <button
+            @click="showModal = true"
+            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-sm font-semibold transition"
+          >
+            + สร้าง Board
+          </button>
+        </div>
       </div>
 
       <!-- Loading -->
@@ -166,6 +206,46 @@ async function deleteBoard(id: number) {
         </div>
       </div>
     </main>
+
+    <!-- Templates modal -->
+    <div v-if="showTemplates" class="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center z-50 sm:px-4">
+      <div class="bg-gray-900 sm:rounded-2xl rounded-t-2xl w-full sm:max-w-lg border border-gray-800 p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-bold text-lg">เลือก Template</h3>
+          <button @click="showTemplates = false" class="text-gray-500 hover:text-white">✕</button>
+        </div>
+        <div class="mb-4">
+          <input
+            v-model="templateBoardName"
+            type="text"
+            placeholder="ชื่อ board (ไม่บังคับ ถ้าว่างจะใช้ชื่อ template)"
+            class="w-full px-3 py-2 rounded-xl bg-gray-800 border border-gray-700 text-sm text-white placeholder:text-gray-500 outline-none focus:border-indigo-500"
+          />
+        </div>
+        <div class="space-y-3">
+          <button
+            v-for="tpl in templates"
+            :key="tpl.key"
+            :disabled="applyingTemplate !== null"
+            @click="applyTemplate(tpl)"
+            class="w-full text-left p-4 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-indigo-500/50 transition disabled:opacity-50"
+          >
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-semibold text-sm text-white">{{ tpl.name }}</span>
+              <span v-if="applyingTemplate === tpl.key" class="text-xs text-indigo-400">กำลังสร้าง...</span>
+            </div>
+            <p class="text-xs text-gray-400 mb-2">{{ tpl.description }}</p>
+            <div class="flex flex-wrap gap-1">
+              <span
+                v-for="col in tpl.columns"
+                :key="col"
+                class="text-[10px] bg-gray-700 text-gray-300 rounded-full px-2 py-0.5"
+              >{{ col }}</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Create modal -->
     <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
