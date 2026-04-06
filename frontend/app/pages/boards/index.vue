@@ -83,6 +83,7 @@ async function deleteBoard(id: number) {
   <div class="min-h-screen bg-gray-950 text-white">
     <AppNavbar title="Task Board">
       <template #actions>
+        <NuxtLink to="/search" class="text-sm text-gray-400 hover:text-white transition">🔍 ค้นหา</NuxtLink>
         <NuxtLink to="/workspaces" class="text-sm text-gray-400 hover:text-white transition">Workspaces</NuxtLink>
       </template>
     </AppNavbar>
