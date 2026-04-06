@@ -28,6 +28,9 @@ const mobileMenuOpen = ref(false)
     <!-- Desktop slot -->
     <div class="hidden sm:flex items-center gap-2">
       <slot name="actions" />
+      <NuxtLink to="/notifications" class="relative text-gray-400 hover:text-white transition p-1">
+        🔔
+      </NuxtLink>
       <NuxtLink to="/profile" class="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition ml-2">
         <div class="w-7 h-7 rounded-full bg-indigo-700 flex items-center justify-center text-xs font-bold shrink-0">
           {{ (authStore.user?.fullName || authStore.user?.email || '?')[0].toUpperCase() }}
