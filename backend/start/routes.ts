@@ -2,11 +2,21 @@ import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 import { controllers } from '#generated/controllers'
 import RateLimitMiddleware from '#middleware/rate_limit_middleware'
+import AutoSwagger from 'adonis-autoswagger'
+import swagger from '#config/swagger'
 
 const authRateLimit = () => new RateLimitMiddleware(10, 60_000)
 
 router.get('/', () => {
   return { hello: 'world' }
+})
+
+router.get('/swagger', async () => {
+  return AutoSwagger.default.docs(router.toJSON(), swagger)
+})
+
+router.get('/docs', async () => {
+  return AutoSwagger.default.ui('/swagger', swagger)
 })
 
 router
