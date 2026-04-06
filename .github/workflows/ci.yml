@@ -1,0 +1,120 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  backend-test:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: task_board_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create .env.test
+        run: |
+          cat > .env.test << EOF
+          TZ=UTC
+          PORT=3333
+          HOST=localhost
+          NODE_ENV=test
+          LOG_LEVEL=error
+          APP_KEY=testkey1234567890testkey1234567890
+          APP_URL=http://localhost:3333
+          SESSION_DRIVER=cookie
+          DB_CONNECTION=pg
+          PG_HOST=localhost
+          PG_PORT=5432
+          PG_USER=postgres
+          PG_PASSWORD=postgres
+          PG_DB_NAME=task_board_test
+          EOF
+
+      - name: Run migrations
+        run: node ace migration:run --force
+        env:
+          NODE_ENV: test
+
+      - name: Run tests
+        run: node ace test --env-file=.env.test
+        env:
+          NODE_ENV: test
+
+  backend-build:
+    name: Backend Build Check
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: node ace build
+
+  frontend-build:
+    name: Frontend Build Check
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          NUXT_PUBLIC_API_BASE: http://localhost:3333
