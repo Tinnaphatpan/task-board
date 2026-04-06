@@ -61,6 +61,9 @@ export interface ApiDefinition {
     activityLogs: {
       index: typeof routes['boards.activity_logs.index']
     }
+    export: {
+      boardCsv: typeof routes['boards.export.board_csv']
+    }
     boardStats: {
       index: typeof routes['boards.board_stats.index']
     }

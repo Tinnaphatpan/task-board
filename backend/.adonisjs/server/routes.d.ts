@@ -28,6 +28,7 @@ export type ScannedRoutes = {
     'boards.boards.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.boards.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.activity_logs.index': { paramsTuple: [ParamValue]; params: {'boardId': ParamValue} }
+    'boards.export.board_csv': { paramsTuple: [ParamValue]; params: {'boardId': ParamValue} }
     'boards.board_stats.index': { paramsTuple: [ParamValue]; params: {'boardId': ParamValue} }
     'boards.labels.index': { paramsTuple: [ParamValue]; params: {'boardId': ParamValue} }
     'boards.labels.store': { paramsTuple: [ParamValue]; params: {'boardId': ParamValue} }
@@ -70,6 +71,7 @@ export type ScannedRoutes = {
     'boards.boards.index': { paramsTuple?: []; params?: {} }
     'boards.boards.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.activity_logs.index': { paramsTuple: [ParamValue]; params: {'boardId': ParamValue} }
+    'boards.export.board_csv': { paramsTuple: [ParamValue]; params: {'boardId': ParamValue} }
     'boards.board_stats.index': { paramsTuple: [ParamValue]; params: {'boardId': ParamValue} }
     'boards.labels.index': { paramsTuple: [ParamValue]; params: {'boardId': ParamValue} }
     'boards.labels.task_labels': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
@@ -92,6 +94,7 @@ export type ScannedRoutes = {
     'boards.boards.index': { paramsTuple?: []; params?: {} }
     'boards.boards.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.activity_logs.index': { paramsTuple: [ParamValue]; params: {'boardId': ParamValue} }
+    'boards.export.board_csv': { paramsTuple: [ParamValue]; params: {'boardId': ParamValue} }
     'boards.board_stats.index': { paramsTuple: [ParamValue]; params: {'boardId': ParamValue} }
     'boards.labels.index': { paramsTuple: [ParamValue]; params: {'boardId': ParamValue} }
     'boards.labels.task_labels': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }

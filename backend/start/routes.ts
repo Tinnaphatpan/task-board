@@ -84,6 +84,9 @@ router
         // Activity logs
         router.get('/:boardId/activity', [controllers.ActivityLogs, 'index'])
 
+        // CSV Export
+        router.get('/:boardId/export/csv', [controllers.Export, 'boardCsv'])
+
         // Stats
         router.get('/:boardId/stats', [controllers.BoardStats, 'index'])
 

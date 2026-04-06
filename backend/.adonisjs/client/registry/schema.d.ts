@@ -295,6 +295,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/activity_logs_controller').default['index']>>>
     }
   }
+  'boards.export.board_csv': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/boards/:boardId/export/csv'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { boardId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/export_controller').default['boardCsv']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/export_controller').default['boardCsv']>>>
+    }
+  }
   'boards.board_stats.index': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/boards/:boardId/stats'

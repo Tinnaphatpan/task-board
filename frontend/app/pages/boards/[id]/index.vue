@@ -536,6 +536,11 @@ function formatShortDate(dateStr: string): string {
             :class="showActivityLog ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'">
             📋
           </button>
+          <a
+            :href="`${useRuntimeConfig().public.apiBase}/api/v1/boards/${boardId}/export/csv`"
+            class="px-2.5 py-1.5 rounded-lg text-sm bg-gray-800 border border-gray-700 text-gray-400 hover:text-white transition"
+            :download="`board-${boardId}.csv`"
+          >⬇</a>
         </div>
 
         <!-- Mobile action row toggle -->

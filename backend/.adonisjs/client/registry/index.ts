@@ -150,6 +150,12 @@ const routes = {
     tokens: [{"old":"/api/v1/boards/:boardId/activity","type":0,"val":"api","end":""},{"old":"/api/v1/boards/:boardId/activity","type":0,"val":"v1","end":""},{"old":"/api/v1/boards/:boardId/activity","type":0,"val":"boards","end":""},{"old":"/api/v1/boards/:boardId/activity","type":1,"val":"boardId","end":""},{"old":"/api/v1/boards/:boardId/activity","type":0,"val":"activity","end":""}],
     types: placeholder as Registry['boards.activity_logs.index']['types'],
   },
+  'boards.export.board_csv': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/boards/:boardId/export/csv',
+    tokens: [{"old":"/api/v1/boards/:boardId/export/csv","type":0,"val":"api","end":""},{"old":"/api/v1/boards/:boardId/export/csv","type":0,"val":"v1","end":""},{"old":"/api/v1/boards/:boardId/export/csv","type":0,"val":"boards","end":""},{"old":"/api/v1/boards/:boardId/export/csv","type":1,"val":"boardId","end":""},{"old":"/api/v1/boards/:boardId/export/csv","type":0,"val":"export","end":""},{"old":"/api/v1/boards/:boardId/export/csv","type":0,"val":"csv","end":""}],
+    types: placeholder as Registry['boards.export.board_csv']['types'],
+  },
   'boards.board_stats.index': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/boards/:boardId/stats',
