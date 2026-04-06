@@ -7,6 +7,29 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
+export class ActivityLogSchema extends BaseModel {
+  static $columns = ['action', 'boardId', 'createdAt', 'description', 'entityId', 'entityType', 'id', 'updatedAt', 'userId'] as const
+  $columns = ActivityLogSchema.$columns
+  @column()
+  declare action: string
+  @column()
+  declare boardId: number | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string
+  @column()
+  declare entityId: number | null
+  @column()
+  declare entityType: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number | null
+}
+
 export class AuthAccessTokenSchema extends BaseModel {
   static $columns = ['abilities', 'createdAt', 'expiresAt', 'hash', 'id', 'lastUsedAt', 'name', 'tokenableId', 'type', 'updatedAt'] as const
   $columns = AuthAccessTokenSchema.$columns
@@ -50,7 +73,7 @@ export class BoardMemberSchema extends BaseModel {
 }
 
 export class BoardSchema extends BaseModel {
-  static $columns = ['createdAt', 'description', 'id', 'name', 'ownerId', 'updatedAt'] as const
+  static $columns = ['createdAt', 'description', 'id', 'name', 'ownerId', 'updatedAt', 'workspaceId'] as const
   $columns = BoardSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
@@ -64,6 +87,8 @@ export class BoardSchema extends BaseModel {
   declare ownerId: number | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare workspaceId: number | null
 }
 
 export class ColumnSchema extends BaseModel {
@@ -79,6 +104,97 @@ export class ColumnSchema extends BaseModel {
   declare name: string
   @column()
   declare position: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class CommentSchema extends BaseModel {
+  static $columns = ['content', 'createdAt', 'id', 'taskId', 'updatedAt', 'userId'] as const
+  $columns = CommentSchema.$columns
+  @column()
+  declare content: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare taskId: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number | null
+}
+
+export class LabelSchema extends BaseModel {
+  static $columns = ['boardId', 'color', 'createdAt', 'id', 'name', 'updatedAt'] as const
+  $columns = LabelSchema.$columns
+  @column()
+  declare boardId: number | null
+  @column()
+  declare color: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare name: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class SubtaskSchema extends BaseModel {
+  static $columns = ['completed', 'createdAt', 'id', 'position', 'taskId', 'title', 'updatedAt'] as const
+  $columns = SubtaskSchema.$columns
+  @column()
+  declare completed: boolean | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare position: number | null
+  @column()
+  declare taskId: number | null
+  @column()
+  declare title: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class TaskAttachmentSchema extends BaseModel {
+  static $columns = ['createdAt', 'filename', 'id', 'mimeType', 'originalName', 'size', 'taskId', 'updatedAt', 'uploadedBy'] as const
+  $columns = TaskAttachmentSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare filename: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare mimeType: string
+  @column()
+  declare originalName: string
+  @column()
+  declare size: number
+  @column()
+  declare taskId: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare uploadedBy: number | null
+}
+
+export class TaskLabelSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'labelId', 'taskId', 'updatedAt'] as const
+  $columns = TaskLabelSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare labelId: number | null
+  @column()
+  declare taskId: number | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 }
@@ -111,8 +227,10 @@ export class TaskSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
+  static $columns = ['avatarUrl', 'createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
   $columns = UserSchema.$columns
+  @column()
+  declare avatarUrl: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()
@@ -123,6 +241,40 @@ export class UserSchema extends BaseModel {
   declare id: number
   @column({ serializeAs: null })
   declare password: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class WorkspaceMemberSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'role', 'updatedAt', 'userId', 'workspaceId'] as const
+  $columns = WorkspaceMemberSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare role: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number | null
+  @column()
+  declare workspaceId: number | null
+}
+
+export class WorkspaceSchema extends BaseModel {
+  static $columns = ['createdAt', 'description', 'id', 'name', 'ownerId', 'updatedAt'] as const
+  $columns = WorkspaceSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare name: string
+  @column()
+  declare ownerId: number | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 }

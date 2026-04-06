@@ -66,6 +66,14 @@ router
         // Stats
         router.get('/:boardId/stats', [controllers.BoardStats, 'index'])
 
+        // Labels
+        router.get('/:boardId/labels', [controllers.Labels, 'index'])
+        router.post('/:boardId/labels', [controllers.Labels, 'store'])
+        router.delete('/labels/:id', [controllers.Labels, 'destroy'])
+        router.get('/tasks/:taskId/labels', [controllers.Labels, 'taskLabels'])
+        router.post('/tasks/:taskId/labels/:labelId', [controllers.Labels, 'attachToTask'])
+        router.delete('/tasks/:taskId/labels/:labelId', [controllers.Labels, 'detachFromTask'])
+
         // Board members
         router.get('/:boardId/members', [controllers.BoardMembers, 'index'])
         router.post('/:boardId/members', [controllers.BoardMembers, 'store'])

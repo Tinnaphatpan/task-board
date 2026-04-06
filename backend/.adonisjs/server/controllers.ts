@@ -5,9 +5,18 @@
 
 export const controllers = {
   AccessToken: () => import('#controllers/access_token_controller'),
-  NewAccount: () => import('#controllers/new_account_controller'),
-  Profile: () => import('#controllers/profile_controller'),
+  ActivityLogs: () => import('#controllers/activity_logs_controller'),
+  BoardMembers: () => import('#controllers/board_members_controller'),
+  BoardStats: () => import('#controllers/board_stats_controller'),
   Boards: () => import('#controllers/boards_controller'),
   Columns: () => import('#controllers/columns_controller'),
+  Comments: () => import('#controllers/comments_controller'),
+  Labels: () => import('#controllers/labels_controller'),
+  NewAccount: () => import('#controllers/new_account_controller'),
+  Profile: () => import('#controllers/profile_controller'),
+  Subtasks: () => import('#controllers/subtasks_controller'),
+  TaskAttachments: () => import('#controllers/task_attachments_controller'),
   Tasks: () => import('#controllers/tasks_controller'),
+  Users: () => import('#controllers/users_controller'),
+  Workspaces: () => import('#controllers/workspaces_controller'),
 }
