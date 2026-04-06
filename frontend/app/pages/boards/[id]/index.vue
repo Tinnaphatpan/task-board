@@ -74,6 +74,13 @@ interface ActivityLog {
   user: { id: number; fullName: string | null; email: string } | null
 }
 
+interface Label {
+  id: number
+  boardId: number
+  name: string
+  color: string
+}
+
 const route = useRoute()
 const { get, post, put, del } = useApi()
 const authStore = useAuthStore()
@@ -93,6 +100,15 @@ const boardMembers = ref<BoardMember[]>([])
 const attachments = ref<Attachment[]>([])
 const uploadingFile = ref(false)
 const attachmentInput = ref<HTMLInputElement | null>(null)
+
+// Labels
+const boardLabels = ref<Label[]>([])
+const taskLabels = ref<Label[]>([])
+const taskLabelsMap = ref<Record<number, Label[]>>({})
+const showLabelPicker = ref(false)
+const showCreateLabel = ref(false)
+const newLabelForm = reactive({ name: '', color: '#6366f1' })
+const savingLabel = ref(false)
 
 // Column modal
 const showColumnModal = ref(false)
@@ -130,11 +146,13 @@ onMounted(loadBoard)
 async function loadBoard() {
   loading.value = true
   try {
-    const [boardData, columnsData, usersData] = await Promise.all([
+    const [boardData, columnsData, usersData, labelsData] = await Promise.all([
       get<Board>(`/api/v1/boards/${boardId}`),
       get<Column[]>(`/api/v1/boards/${boardId}/columns`),
       get<User[]>('/api/v1/users'),
+      get<Label[]>(`/api/v1/boards/${boardId}/labels`).catch(() => [] as Label[]),
     ])
+    boardLabels.value = labelsData
     board.value = boardData
     columns.value = columnsData.sort((a, b) => a.position - b.position)
     allUsers.value = usersData
@@ -249,14 +267,19 @@ async function openTaskDetail(task: Task) {
   editTaskForm.dueDate = task.dueDate ?? ''
   editTaskForm.assigneeId = task.assigneeId ?? null
   showTaskDetail.value = true
-  const [subtasksData, commentsData, attachmentsData] = await Promise.all([
+  const [subtasksData, commentsData, attachmentsData, labelsData] = await Promise.all([
     get<Subtask[]>(`/api/v1/boards/tasks/${task.id}/subtasks`),
     get<Comment[]>(`/api/v1/boards/tasks/${task.id}/comments`),
     get<Attachment[]>(`/api/v1/boards/tasks/${task.id}/attachments`),
+    get<Label[]>(`/api/v1/boards/tasks/${task.id}/labels`).catch(() => [] as Label[]),
   ])
   subtasks.value = subtasksData
   comments.value = commentsData
   attachments.value = attachmentsData
+  taskLabels.value = labelsData
+  taskLabelsMap.value[task.id] = labelsData
+  showLabelPicker.value = false
+  showCreateLabel.value = false
 }
 
 async function handleFileUpload(event: Event) {
@@ -372,6 +395,60 @@ async function deleteComment(comment: Comment) {
   await del(`/api/v1/boards/comments/${comment.id}`)
   comments.value = comments.value.filter((c) => c.id !== comment.id)
 }
+
+// Labels
+function isLabelAttached(labelId: number): boolean {
+  return taskLabels.value.some((l) => l.id === labelId)
+}
+
+async function toggleLabel(label: Label) {
+  if (!selectedTask.value) return
+  const taskId = selectedTask.value.id
+  if (isLabelAttached(label.id)) {
+    await del(`/api/v1/boards/tasks/${taskId}/labels/${label.id}`)
+    taskLabels.value = taskLabels.value.filter((l) => l.id !== label.id)
+  } else {
+    await post(`/api/v1/boards/tasks/${taskId}/labels/${label.id}`, {})
+    taskLabels.value.push(label)
+  }
+  taskLabelsMap.value[taskId] = [...taskLabels.value]
+}
+
+async function createBoardLabel() {
+  if (!newLabelForm.name.trim()) return
+  savingLabel.value = true
+  try {
+    const label = await post<Label>(`/api/v1/boards/${boardId}/labels`, {
+      name: newLabelForm.name,
+      color: newLabelForm.color,
+    })
+    boardLabels.value.push(label)
+    newLabelForm.name = ''
+    newLabelForm.color = '#6366f1'
+    showCreateLabel.value = false
+  } finally {
+    savingLabel.value = false
+  }
+}
+
+async function deleteBoardLabel(label: Label) {
+  if (!confirm(`ลบ label "${label.name}"?`)) return
+  await del(`/api/v1/boards/labels/${label.id}`)
+  boardLabels.value = boardLabels.value.filter((l) => l.id !== label.id)
+  // Remove from all cached task labels
+  for (const taskId in taskLabelsMap.value) {
+    taskLabelsMap.value[taskId] = taskLabelsMap.value[taskId].filter((l) => l.id !== label.id)
+  }
+  taskLabels.value = taskLabels.value.filter((l) => l.id !== label.id)
+}
+
+const isAdmin = computed(() => {
+  const me = authStore.user
+  if (!me || !board.value) return false
+  if (board.value.ownerId === me.id) return true
+  const member = boardMembers.value.find((m) => m.id === me.id)
+  return member?.role === 'admin'
+})
 
 // Helpers
 const priorityLabel: Record<string, string> = { low: 'ต่ำ', medium: 'กลาง', high: 'สูง' }
@@ -539,6 +616,15 @@ function formatShortDate(dateStr: string): string {
                     <p v-if="task.description" class="text-xs text-gray-400 mt-1 line-clamp-2">
                       {{ task.description }}
                     </p>
+                    <!-- Label chips on card -->
+                    <div v-if="taskLabelsMap[task.id]?.length" class="flex flex-wrap gap-1 mt-1.5">
+                      <span
+                        v-for="label in taskLabelsMap[task.id]"
+                        :key="label.id"
+                        class="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
+                        :style="{ backgroundColor: label.color + '33', color: label.color, border: `1px solid ${label.color}66` }"
+                      >{{ label.name }}</span>
+                    </div>
                     <div class="flex items-center justify-between mt-2 gap-2">
                       <span
                         v-if="task.priority"
@@ -888,6 +974,106 @@ function formatShortDate(dateStr: string): string {
                   {{ user.fullName || user.email }}
                 </option>
               </select>
+            </div>
+
+            <!-- Labels -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-xs font-medium text-gray-400">Labels</label>
+                <button
+                  @click="showLabelPicker = !showLabelPicker; showCreateLabel = false"
+                  class="text-xs text-indigo-400 hover:text-indigo-300 transition"
+                >
+                  {{ showLabelPicker ? 'ปิด' : '+ แก้ไข' }}
+                </button>
+              </div>
+
+              <!-- Attached labels -->
+              <div class="flex flex-wrap gap-1 mb-2 min-h-[24px]">
+                <span
+                  v-if="taskLabels.length === 0 && !showLabelPicker"
+                  class="text-xs text-gray-600"
+                >ยังไม่มี labels</span>
+                <span
+                  v-for="label in taskLabels"
+                  :key="label.id"
+                  class="flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full font-medium cursor-pointer"
+                  :style="{ backgroundColor: label.color + '33', color: label.color, border: `1px solid ${label.color}66` }"
+                  :title="showLabelPicker ? 'คลิกเพื่อถอด' : label.name"
+                  @click="showLabelPicker && toggleLabel(label)"
+                >
+                  {{ label.name }}
+                  <span v-if="showLabelPicker" class="opacity-70 hover:opacity-100">✕</span>
+                </span>
+              </div>
+
+              <!-- Label picker dropdown -->
+              <div v-if="showLabelPicker" class="bg-gray-800 border border-gray-700 rounded-xl p-2 space-y-1">
+                <div v-if="boardLabels.length === 0" class="text-xs text-gray-500 px-2 py-1">
+                  ยังไม่มี labels ในบอร์ดนี้
+                </div>
+                <button
+                  v-for="label in boardLabels"
+                  :key="label.id"
+                  class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-gray-700 transition text-xs group"
+                  @click="toggleLabel(label)"
+                >
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="w-3 h-3 rounded-full shrink-0"
+                      :style="{ backgroundColor: label.color }"
+                    />
+                    <span class="text-gray-200">{{ label.name }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span
+                      v-if="isLabelAttached(label.id)"
+                      class="text-indigo-400 text-[10px]"
+                    >✓</span>
+                    <button
+                      v-if="isAdmin"
+                      class="text-gray-700 hover:text-red-400 opacity-0 group-hover:opacity-100 transition"
+                      @click.stop="deleteBoardLabel(label)"
+                    >✕</button>
+                  </div>
+                </button>
+
+                <!-- Create new label (admin only) -->
+                <div v-if="isAdmin" class="pt-1 border-t border-gray-700">
+                  <button
+                    v-if="!showCreateLabel"
+                    @click="showCreateLabel = true"
+                    class="w-full text-left text-xs text-indigo-400 hover:text-indigo-300 px-2 py-1 transition"
+                  >
+                    + สร้าง label ใหม่
+                  </button>
+                  <div v-else class="space-y-2 pt-1">
+                    <input
+                      v-model="newLabelForm.name"
+                      type="text"
+                      placeholder="ชื่อ label..."
+                      class="w-full px-2 py-1.5 rounded-lg bg-gray-900 border border-gray-600 text-xs text-white placeholder:text-gray-500 outline-none focus:border-indigo-500"
+                      @keydown.enter="createBoardLabel"
+                    />
+                    <div class="flex items-center gap-2">
+                      <input
+                        v-model="newLabelForm.color"
+                        type="color"
+                        class="w-7 h-7 rounded cursor-pointer border-0 bg-transparent p-0"
+                      />
+                      <span class="text-[10px] text-gray-500 flex-1">{{ newLabelForm.color }}</span>
+                      <button
+                        @click="createBoardLabel"
+                        :disabled="savingLabel"
+                        class="px-2 py-1 bg-indigo-600 hover:bg-indigo-500 rounded text-[11px] transition disabled:opacity-50"
+                      >
+                        {{ savingLabel ? '...' : 'เพิ่ม' }}
+                      </button>
+                      <button @click="showCreateLabel = false" class="text-gray-500 hover:text-white text-xs">ยกเลิก</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
