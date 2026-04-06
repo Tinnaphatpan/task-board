@@ -28,6 +28,11 @@ export interface ApiDefinition {
       index: typeof routes['users.users.index']
     }
   }
+  search: {
+    search: {
+      index: typeof routes['search.search.index']
+    }
+  }
   workspaces: {
     workspaces: {
       index: typeof routes['workspaces.workspaces.index']

@@ -14,6 +14,7 @@ export const controllers = {
   Labels: () => import('#controllers/labels_controller'),
   NewAccount: () => import('#controllers/new_account_controller'),
   Profile: () => import('#controllers/profile_controller'),
+  Search: () => import('#controllers/search_controller'),
   Subtasks: () => import('#controllers/subtasks_controller'),
   TaskAttachments: () => import('#controllers/task_attachments_controller'),
   Tasks: () => import('#controllers/tasks_controller'),

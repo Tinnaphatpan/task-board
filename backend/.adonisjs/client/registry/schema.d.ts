@@ -103,6 +103,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/users_controller').default['index']>>>
     }
   }
+  'search.search.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/search'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/search_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/search_controller').default['index']>>>
+    }
+  }
   'workspaces.workspaces.index': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/workspaces'

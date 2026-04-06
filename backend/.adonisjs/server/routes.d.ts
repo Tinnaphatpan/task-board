@@ -12,6 +12,7 @@ export type ScannedRoutes = {
     'profile.profile.update': { paramsTuple?: []; params?: {} }
     'profile.profile.upload_avatar': { paramsTuple?: []; params?: {} }
     'users.users.index': { paramsTuple?: []; params?: {} }
+    'search.search.index': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.index': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.store': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -57,6 +58,7 @@ export type ScannedRoutes = {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'profile.profile.show': { paramsTuple?: []; params?: {} }
     'users.users.index': { paramsTuple?: []; params?: {} }
+    'search.search.index': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.index': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.boards.index': { paramsTuple?: []; params?: {} }
@@ -76,6 +78,7 @@ export type ScannedRoutes = {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'profile.profile.show': { paramsTuple?: []; params?: {} }
     'users.users.index': { paramsTuple?: []; params?: {} }
+    'search.search.index': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.index': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.boards.index': { paramsTuple?: []; params?: {} }

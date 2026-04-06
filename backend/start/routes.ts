@@ -38,6 +38,15 @@ router
       .as('users')
       .use(middleware.auth())
 
+    // Global search
+    router
+      .group(() => {
+        router.get('/', [controllers.Search, 'index'])
+      })
+      .prefix('search')
+      .as('search')
+      .use(middleware.auth())
+
     // Workspaces
     router
       .group(() => {

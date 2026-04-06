@@ -54,6 +54,12 @@ const routes = {
     tokens: [{"old":"/api/v1/users","type":0,"val":"api","end":""},{"old":"/api/v1/users","type":0,"val":"v1","end":""},{"old":"/api/v1/users","type":0,"val":"users","end":""}],
     types: placeholder as Registry['users.users.index']['types'],
   },
+  'search.search.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/search',
+    tokens: [{"old":"/api/v1/search","type":0,"val":"api","end":""},{"old":"/api/v1/search","type":0,"val":"v1","end":""},{"old":"/api/v1/search","type":0,"val":"search","end":""}],
+    types: placeholder as Registry['search.search.index']['types'],
+  },
   'workspaces.workspaces.index': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/workspaces',
