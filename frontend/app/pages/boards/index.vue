@@ -85,6 +85,7 @@ async function deleteBoard(id: number) {
     <nav class="bg-gray-900 border-b border-gray-800 px-6 py-4 flex items-center justify-between">
       <h1 class="text-xl font-bold text-white">Task Board</h1>
       <div class="flex items-center gap-4">
+        <NuxtLink to="/workspaces" class="text-sm text-gray-400 hover:text-white transition">Workspaces</NuxtLink>
         <NuxtLink to="/profile" class="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition">
           <div class="w-7 h-7 rounded-full bg-indigo-700 flex items-center justify-center text-xs font-bold">
             {{ (authStore.user?.fullName || authStore.user?.email || '?')[0].toUpperCase() }}
