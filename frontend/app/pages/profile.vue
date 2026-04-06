@@ -94,8 +94,8 @@ function getInitials(): string {
       <h1 class="text-base font-bold">โปรไฟล์</h1>
     </nav>
 
-    <main class="max-w-lg mx-auto px-6 py-10">
-      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8 space-y-6">
+    <main class="max-w-lg mx-auto px-4 sm:px-6 py-6 sm:py-10">
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 sm:p-8 space-y-6">
         <!-- Avatar -->
         <div class="flex flex-col items-center gap-4">
           <div class="relative">

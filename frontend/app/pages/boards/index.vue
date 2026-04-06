@@ -81,24 +81,13 @@ async function deleteBoard(id: number) {
 
 <template>
   <div class="min-h-screen bg-gray-950 text-white">
-    <!-- Navbar -->
-    <nav class="bg-gray-900 border-b border-gray-800 px-6 py-4 flex items-center justify-between">
-      <h1 class="text-xl font-bold text-white">Task Board</h1>
-      <div class="flex items-center gap-4">
+    <AppNavbar title="Task Board">
+      <template #actions>
         <NuxtLink to="/workspaces" class="text-sm text-gray-400 hover:text-white transition">Workspaces</NuxtLink>
-        <NuxtLink to="/profile" class="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition">
-          <div class="w-7 h-7 rounded-full bg-indigo-700 flex items-center justify-center text-xs font-bold">
-            {{ (authStore.user?.fullName || authStore.user?.email || '?')[0].toUpperCase() }}
-          </div>
-          {{ authStore.user?.fullName || authStore.user?.email }}
-        </NuxtLink>
-        <button @click="authStore.logout()" class="text-sm text-gray-400 hover:text-white transition">
-          ออกจากระบบ
-        </button>
-      </div>
-    </nav>
+      </template>
+    </AppNavbar>
 
-    <main class="max-w-6xl mx-auto px-6 py-8">
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
       <!-- Header -->
       <div class="flex items-center justify-between mb-8">
         <div>

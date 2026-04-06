@@ -118,7 +118,7 @@ const priorityColor: Record<string, string> = {
       <h1 class="text-base font-bold text-white">Calendar</h1>
     </nav>
 
-    <main class="flex-1 p-6 max-w-5xl mx-auto w-full">
+    <main class="flex-1 p-4 sm:p-6 max-w-5xl mx-auto w-full">
       <!-- Month navigation -->
       <div class="flex items-center justify-between mb-6">
         <button @click="prevMonth" class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm transition">←</button>
@@ -142,11 +142,11 @@ const priorityColor: Record<string, string> = {
         </div>
 
         <!-- Day cells -->
-        <div class="grid grid-cols-7 gap-2">
+        <div class="grid grid-cols-7 gap-1 sm:gap-2">
           <div
             v-for="(day, idx) in calendarDays"
             :key="idx"
-            class="min-h-24 rounded-xl p-2 border transition"
+            class="min-h-16 sm:min-h-24 rounded-lg sm:rounded-xl p-1 sm:p-2 border transition"
             :class="[
               day ? 'bg-gray-900 border-gray-800' : 'bg-transparent border-transparent',
               isToday(day) ? 'border-indigo-500/60 bg-indigo-950/30' : '',

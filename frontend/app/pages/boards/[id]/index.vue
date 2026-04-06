@@ -88,6 +88,7 @@ const allUsers = ref<User[]>([])
 const activityLogs = ref<ActivityLog[]>([])
 const showActivityLog = ref(false)
 const showMembers = ref(false)
+const showMobileActions = ref(false)
 const boardMembers = ref<BoardMember[]>([])
 const attachments = ref<Attachment[]>([])
 const uploadingFile = ref(false)
@@ -429,41 +430,68 @@ function formatShortDate(dateStr: string): string {
 <template>
   <div class="min-h-screen bg-gray-950 text-white flex flex-col">
     <!-- Navbar -->
-    <nav class="bg-gray-900 border-b border-gray-800 px-6 py-3 flex items-center gap-3 shrink-0">
-      <NuxtLink to="/boards" class="text-gray-400 hover:text-white transition text-sm">← Boards</NuxtLink>
-      <span class="text-gray-700">/</span>
-      <h1 class="text-base font-bold text-white">{{ board?.name ?? '...' }}</h1>
-      <div class="flex-1" />
-      <!-- Search -->
-      <input
-        v-model="searchQuery"
-        type="text"
-        placeholder="ค้นหา task..."
-        class="w-48 px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-sm text-white placeholder:text-gray-500 outline-none focus:border-indigo-500 transition"
-      />
-      <!-- Members toggle -->
-      <button
-        @click="showMembers = !showMembers; showActivityLog = false"
-        class="px-3 py-1.5 rounded-lg text-sm border transition"
-        :class="showMembers ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'"
-      >
-        👥 สมาชิก
-      </button>
-      <!-- Calendar link -->
-      <NuxtLink
-        :to="`/boards/${boardId}/calendar`"
-        class="px-3 py-1.5 rounded-lg text-sm bg-gray-800 border border-gray-700 text-gray-400 hover:text-white transition"
-      >
-        📅 Calendar
-      </NuxtLink>
-      <!-- Activity log toggle -->
-      <button
-        @click="showActivityLog = !showActivityLog; showMembers = false"
-        class="px-3 py-1.5 rounded-lg text-sm border transition"
-        :class="showActivityLog ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'"
-      >
-        Activity
-      </button>
+    <nav class="bg-gray-900 border-b border-gray-800 px-4 sm:px-6 py-3 shrink-0 z-30">
+      <!-- Row 1: back + title + mobile menu -->
+      <div class="flex items-center gap-2">
+        <NuxtLink to="/boards" class="text-gray-400 hover:text-white transition text-sm shrink-0">← Boards</NuxtLink>
+        <span class="text-gray-700">/</span>
+        <h1 class="text-base font-bold text-white truncate flex-1">{{ board?.name ?? '...' }}</h1>
+
+        <!-- Desktop actions -->
+        <div class="hidden sm:flex items-center gap-2">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="ค้นหา task..."
+            class="w-40 px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-sm text-white placeholder:text-gray-500 outline-none focus:border-indigo-500 transition"
+          />
+          <button @click="showMembers = !showMembers; showActivityLog = false"
+            class="px-2.5 py-1.5 rounded-lg text-sm border transition"
+            :class="showMembers ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'">
+            👥
+          </button>
+          <NuxtLink :to="`/boards/${boardId}/calendar`"
+            class="px-2.5 py-1.5 rounded-lg text-sm bg-gray-800 border border-gray-700 text-gray-400 hover:text-white transition">
+            📅
+          </NuxtLink>
+          <button @click="showActivityLog = !showActivityLog; showMembers = false"
+            class="px-2.5 py-1.5 rounded-lg text-sm border transition"
+            :class="showActivityLog ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'">
+            📋
+          </button>
+        </div>
+
+        <!-- Mobile action row toggle -->
+        <button class="sm:hidden p-1.5 text-gray-400 hover:text-white transition" @click="showMobileActions = !showMobileActions">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile actions row -->
+      <div v-if="showMobileActions" class="sm:hidden mt-2 flex flex-wrap gap-2 pb-1">
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="ค้นหา task..."
+          class="flex-1 min-w-0 px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-sm text-white placeholder:text-gray-500 outline-none focus:border-indigo-500 transition"
+        />
+        <button @click="showMembers = !showMembers; showActivityLog = false"
+          class="px-3 py-1.5 rounded-lg text-sm border transition"
+          :class="showMembers ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-gray-800 border-gray-700 text-gray-400'">
+          👥 สมาชิก
+        </button>
+        <NuxtLink :to="`/boards/${boardId}/calendar`"
+          class="px-3 py-1.5 rounded-lg text-sm bg-gray-800 border border-gray-700 text-gray-400 transition">
+          📅 Calendar
+        </NuxtLink>
+        <button @click="showActivityLog = !showActivityLog; showMembers = false"
+          class="px-3 py-1.5 rounded-lg text-sm border transition"
+          :class="showActivityLog ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-gray-800 border-gray-700 text-gray-400'">
+          📋 Activity
+        </button>
+      </div>
     </nav>
 
     <div class="flex flex-1 overflow-hidden">
@@ -659,8 +687,8 @@ function formatShortDate(dateStr: string): string {
     </div>
 
     <!-- Add Column Modal -->
-    <div v-if="showColumnModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
-      <div class="bg-gray-900 rounded-2xl p-6 w-full max-w-sm border border-gray-800">
+    <div v-if="showColumnModal" class="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center z-50 sm:px-4">
+      <div class="bg-gray-900 sm:rounded-2xl rounded-t-2xl p-6 w-full sm:max-w-sm border border-gray-800">
         <h3 class="font-bold text-lg mb-4">เพิ่ม Column ใหม่</h3>
         <form @submit.prevent="createColumn" class="space-y-4">
           <input
@@ -682,8 +710,8 @@ function formatShortDate(dateStr: string): string {
     </div>
 
     <!-- Task Detail Modal -->
-    <div v-if="showTaskDetail && selectedTask" class="fixed inset-0 bg-black/70 flex items-start justify-center z-50 px-4 py-8 overflow-y-auto">
-      <div class="bg-gray-900 rounded-2xl w-full max-w-2xl border border-gray-800 my-auto">
+    <div v-if="showTaskDetail && selectedTask" class="fixed inset-0 bg-black/70 flex items-end sm:items-start justify-center z-50 sm:px-4 sm:py-8 overflow-y-auto">
+      <div class="bg-gray-900 sm:rounded-2xl rounded-t-2xl w-full sm:max-w-2xl border border-gray-800 sm:my-auto max-h-[95vh] overflow-y-auto">
         <!-- Header -->
         <div class="flex items-start justify-between p-6 border-b border-gray-800">
           <div class="flex-1 pr-4">
@@ -701,9 +729,9 @@ function formatShortDate(dateStr: string): string {
           </div>
         </div>
 
-        <div class="p-6 grid grid-cols-3 gap-6">
+        <div class="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
           <!-- Left: details -->
-          <div class="col-span-2 space-y-5">
+          <div class="sm:col-span-2 space-y-5">
             <!-- Description -->
             <div>
               <label class="block text-xs font-medium text-gray-400 mb-1.5">คำอธิบาย</label>
