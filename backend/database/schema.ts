@@ -205,6 +205,21 @@ export class TaskAttachmentSchema extends BaseModel {
   declare uploadedBy: number | null
 }
 
+export class TaskDependencySchema extends BaseModel {
+  static $columns = ['createdAt', 'dependsOnId', 'id', 'taskId', 'updatedAt'] as const
+  $columns = TaskDependencySchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare dependsOnId: number | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare taskId: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class TaskLabelSchema extends BaseModel {
   static $columns = ['createdAt', 'id', 'labelId', 'taskId', 'updatedAt'] as const
   $columns = TaskLabelSchema.$columns

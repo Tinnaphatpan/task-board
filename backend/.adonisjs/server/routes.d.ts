@@ -60,6 +60,10 @@ export type ScannedRoutes = {
     'boards.task_attachments.index': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
     'boards.task_attachments.store': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
     'boards.task_attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'boards.task_dependencies.blocked_by': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
+    'boards.task_dependencies.blocking': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
+    'boards.task_dependencies.store': { paramsTuple: [ParamValue,ParamValue]; params: {'taskId': ParamValue,'dependsOnId': ParamValue} }
+    'boards.task_dependencies.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'taskId': ParamValue,'dependsOnId': ParamValue} }
   }
   GET: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
@@ -84,6 +88,8 @@ export type ScannedRoutes = {
     'boards.comments.index': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
     'boards.subtasks.index': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
     'boards.task_attachments.index': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
+    'boards.task_dependencies.blocked_by': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
+    'boards.task_dependencies.blocking': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
   }
   HEAD: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
@@ -108,6 +114,8 @@ export type ScannedRoutes = {
     'boards.comments.index': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
     'boards.subtasks.index': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
     'boards.task_attachments.index': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
+    'boards.task_dependencies.blocked_by': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
+    'boards.task_dependencies.blocking': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
   }
   POST: {
     'auth.new_account.store': { paramsTuple?: []; params?: {} }
@@ -125,6 +133,7 @@ export type ScannedRoutes = {
     'boards.comments.store': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
     'boards.subtasks.store': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
     'boards.task_attachments.store': { paramsTuple: [ParamValue]; params: {'taskId': ParamValue} }
+    'boards.task_dependencies.store': { paramsTuple: [ParamValue,ParamValue]; params: {'taskId': ParamValue,'dependsOnId': ParamValue} }
   }
   PUT: {
     'profile.profile.update': { paramsTuple?: []; params?: {} }
@@ -150,6 +159,7 @@ export type ScannedRoutes = {
     'boards.comments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.subtasks.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.task_attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'boards.task_dependencies.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'taskId': ParamValue,'dependsOnId': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

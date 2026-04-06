@@ -154,6 +154,12 @@ router
         router.get('/tasks/:taskId/attachments', [controllers.TaskAttachments, 'index'])
         router.post('/tasks/:taskId/attachments', [controllers.TaskAttachments, 'store'])
         router.delete('/attachments/:id', [controllers.TaskAttachments, 'destroy'])
+
+        // Task dependencies
+        router.get('/tasks/:taskId/dependencies', [controllers.TaskDependencies, 'blockedBy'])
+        router.get('/tasks/:taskId/blocking', [controllers.TaskDependencies, 'blocking'])
+        router.post('/tasks/:taskId/dependencies/:dependsOnId', [controllers.TaskDependencies, 'store'])
+        router.delete('/tasks/:taskId/dependencies/:dependsOnId', [controllers.TaskDependencies, 'destroy'])
       })
       .prefix('boards')
       .as('boards')

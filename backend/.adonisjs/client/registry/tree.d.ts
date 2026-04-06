@@ -115,5 +115,11 @@ export interface ApiDefinition {
       store: typeof routes['boards.task_attachments.store']
       destroy: typeof routes['boards.task_attachments.destroy']
     }
+    taskDependencies: {
+      blockedBy: typeof routes['boards.task_dependencies.blocked_by']
+      blocking: typeof routes['boards.task_dependencies.blocking']
+      store: typeof routes['boards.task_dependencies.store']
+      destroy: typeof routes['boards.task_dependencies.destroy']
+    }
   }
 }

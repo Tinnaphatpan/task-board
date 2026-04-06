@@ -679,4 +679,52 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/task_attachments_controller').default['destroy']>>>
     }
   }
+  'boards.task_dependencies.blocked_by': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/boards/tasks/:taskId/dependencies'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { taskId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/task_dependencies_controller').default['blockedBy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/task_dependencies_controller').default['blockedBy']>>>
+    }
+  }
+  'boards.task_dependencies.blocking': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/boards/tasks/:taskId/blocking'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { taskId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/task_dependencies_controller').default['blocking']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/task_dependencies_controller').default['blocking']>>>
+    }
+  }
+  'boards.task_dependencies.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { taskId: ParamValue; dependsOnId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/task_dependencies_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/task_dependencies_controller').default['store']>>>
+    }
+  }
+  'boards.task_dependencies.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { taskId: ParamValue; dependsOnId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/task_dependencies_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/task_dependencies_controller').default['destroy']>>>
+    }
+  }
 }

@@ -20,6 +20,7 @@ export const controllers = {
   Search: () => import('#controllers/search_controller'),
   Subtasks: () => import('#controllers/subtasks_controller'),
   TaskAttachments: () => import('#controllers/task_attachments_controller'),
+  TaskDependencies: () => import('#controllers/task_dependencies_controller'),
   Tasks: () => import('#controllers/tasks_controller'),
   Users: () => import('#controllers/users_controller'),
   Workspaces: () => import('#controllers/workspaces_controller'),

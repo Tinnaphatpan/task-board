@@ -342,6 +342,30 @@ const routes = {
     tokens: [{"old":"/api/v1/boards/attachments/:id","type":0,"val":"api","end":""},{"old":"/api/v1/boards/attachments/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/boards/attachments/:id","type":0,"val":"boards","end":""},{"old":"/api/v1/boards/attachments/:id","type":0,"val":"attachments","end":""},{"old":"/api/v1/boards/attachments/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['boards.task_attachments.destroy']['types'],
   },
+  'boards.task_dependencies.blocked_by': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/boards/tasks/:taskId/dependencies',
+    tokens: [{"old":"/api/v1/boards/tasks/:taskId/dependencies","type":0,"val":"api","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies","type":0,"val":"v1","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies","type":0,"val":"boards","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies","type":0,"val":"tasks","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies","type":1,"val":"taskId","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies","type":0,"val":"dependencies","end":""}],
+    types: placeholder as Registry['boards.task_dependencies.blocked_by']['types'],
+  },
+  'boards.task_dependencies.blocking': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/boards/tasks/:taskId/blocking',
+    tokens: [{"old":"/api/v1/boards/tasks/:taskId/blocking","type":0,"val":"api","end":""},{"old":"/api/v1/boards/tasks/:taskId/blocking","type":0,"val":"v1","end":""},{"old":"/api/v1/boards/tasks/:taskId/blocking","type":0,"val":"boards","end":""},{"old":"/api/v1/boards/tasks/:taskId/blocking","type":0,"val":"tasks","end":""},{"old":"/api/v1/boards/tasks/:taskId/blocking","type":1,"val":"taskId","end":""},{"old":"/api/v1/boards/tasks/:taskId/blocking","type":0,"val":"blocking","end":""}],
+    types: placeholder as Registry['boards.task_dependencies.blocking']['types'],
+  },
+  'boards.task_dependencies.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId',
+    tokens: [{"old":"/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId","type":0,"val":"api","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId","type":0,"val":"v1","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId","type":0,"val":"boards","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId","type":0,"val":"tasks","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId","type":1,"val":"taskId","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId","type":0,"val":"dependencies","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId","type":1,"val":"dependsOnId","end":""}],
+    types: placeholder as Registry['boards.task_dependencies.store']['types'],
+  },
+  'boards.task_dependencies.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId',
+    tokens: [{"old":"/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId","type":0,"val":"api","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId","type":0,"val":"v1","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId","type":0,"val":"boards","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId","type":0,"val":"tasks","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId","type":1,"val":"taskId","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId","type":0,"val":"dependencies","end":""},{"old":"/api/v1/boards/tasks/:taskId/dependencies/:dependsOnId","type":1,"val":"dependsOnId","end":""}],
+    types: placeholder as Registry['boards.task_dependencies.destroy']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }
