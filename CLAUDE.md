@@ -56,6 +56,10 @@ cd frontend && npm run dev
 | comments | ความคิดเห็นใน task |
 | task_attachments | ไฟล์แนบใน task |
 | activity_logs | บันทึก action ทั้งหมดใน board |
+| labels | labels สีใน board (name, color) |
+| task_labels | pivot: task ↔ label |
+| notifications | การแจ้งเตือน (type, message, data, read, userId) |
+| task_dependencies | task A blocked by task B (taskId, dependsOnId) |
 
 ---
 
@@ -129,10 +133,13 @@ DELETE /boards/attachments/:id
 | / | redirect → /login |
 | /login | หน้า login |
 | /register | หน้า register |
-| /boards | รายการ boards พร้อม stats |
-| /boards/:id | Kanban board (drag&drop, task detail, activity log, search) |
+| /boards | รายการ boards พร้อม stats + Board Templates |
+| /boards/:id | Kanban board (drag&drop, task detail, activity log, search, labels, deps, CSV export) |
 | /boards/:id/calendar | Calendar view (tasks by due date) |
 | /profile | User profile + avatar upload |
+| /search | Global search ข้าม boards และ tasks |
+| /notifications | ประวัติการแจ้งเตือน |
+| /workspaces | รายการ workspaces |
 
 ---
 
