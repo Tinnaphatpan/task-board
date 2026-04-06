@@ -47,6 +47,18 @@ router
       .as('search')
       .use(middleware.auth())
 
+    // Notifications
+    router
+      .group(() => {
+        router.get('/', [controllers.Notifications, 'index'])
+        router.get('/unread-count', [controllers.Notifications, 'unreadCount'])
+        router.patch('/read-all', [controllers.Notifications, 'markAllRead'])
+        router.patch('/:id/read', [controllers.Notifications, 'markRead'])
+      })
+      .prefix('notifications')
+      .as('notifications')
+      .use(middleware.auth())
+
     // Workspaces
     router
       .group(() => {

@@ -1,11 +1,12 @@
 import transmit from '@adonisjs/transmit/services/main'
+import Notification from '#models/notification'
 
 export class NotificationService {
   emitBoardUpdate(boardId: number, event: string, payload: Record<string, unknown>) {
     transmit.broadcast(`board/${boardId}`, { event, ...payload })
   }
 
-  emitTaskAssigned(boardId: number, taskId: number, taskTitle: string, assigneeId: number) {
+  async emitTaskAssigned(boardId: number, taskId: number, taskTitle: string, assigneeId: number) {
     transmit.broadcast(`board/${boardId}`, {
       event: 'task:assigned',
       taskId,
@@ -17,6 +18,13 @@ export class NotificationService {
       taskId,
       taskTitle,
       boardId,
+    })
+    await Notification.create({
+      userId: assigneeId,
+      type: 'task:assigned',
+      message: `คุณได้รับ task "${taskTitle}"`,
+      data: { taskId, boardId },
+      read: false,
     })
   }
 
@@ -36,5 +44,10 @@ export class NotificationService {
       taskTitle,
       columnName,
     })
+  }
+
+  async notifyUser(userId: number, type: string, message: string, data?: Record<string, unknown>) {
+    await Notification.create({ userId, type, message, data: data ?? null, read: false })
+    transmit.broadcast(`user/${userId}/notifications`, { event: type, message, ...data })
   }
 }

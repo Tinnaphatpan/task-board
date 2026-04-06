@@ -60,6 +60,30 @@ const routes = {
     tokens: [{"old":"/api/v1/search","type":0,"val":"api","end":""},{"old":"/api/v1/search","type":0,"val":"v1","end":""},{"old":"/api/v1/search","type":0,"val":"search","end":""}],
     types: placeholder as Registry['search.search.index']['types'],
   },
+  'notifications.notifications.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/notifications',
+    tokens: [{"old":"/api/v1/notifications","type":0,"val":"api","end":""},{"old":"/api/v1/notifications","type":0,"val":"v1","end":""},{"old":"/api/v1/notifications","type":0,"val":"notifications","end":""}],
+    types: placeholder as Registry['notifications.notifications.index']['types'],
+  },
+  'notifications.notifications.unread_count': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/notifications/unread-count',
+    tokens: [{"old":"/api/v1/notifications/unread-count","type":0,"val":"api","end":""},{"old":"/api/v1/notifications/unread-count","type":0,"val":"v1","end":""},{"old":"/api/v1/notifications/unread-count","type":0,"val":"notifications","end":""},{"old":"/api/v1/notifications/unread-count","type":0,"val":"unread-count","end":""}],
+    types: placeholder as Registry['notifications.notifications.unread_count']['types'],
+  },
+  'notifications.notifications.mark_all_read': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/notifications/read-all',
+    tokens: [{"old":"/api/v1/notifications/read-all","type":0,"val":"api","end":""},{"old":"/api/v1/notifications/read-all","type":0,"val":"v1","end":""},{"old":"/api/v1/notifications/read-all","type":0,"val":"notifications","end":""},{"old":"/api/v1/notifications/read-all","type":0,"val":"read-all","end":""}],
+    types: placeholder as Registry['notifications.notifications.mark_all_read']['types'],
+  },
+  'notifications.notifications.mark_read': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/notifications/:id/read',
+    tokens: [{"old":"/api/v1/notifications/:id/read","type":0,"val":"api","end":""},{"old":"/api/v1/notifications/:id/read","type":0,"val":"v1","end":""},{"old":"/api/v1/notifications/:id/read","type":0,"val":"notifications","end":""},{"old":"/api/v1/notifications/:id/read","type":1,"val":"id","end":""},{"old":"/api/v1/notifications/:id/read","type":0,"val":"read","end":""}],
+    types: placeholder as Registry['notifications.notifications.mark_read']['types'],
+  },
   'workspaces.workspaces.index': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/workspaces',

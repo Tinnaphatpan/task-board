@@ -33,6 +33,14 @@ export interface ApiDefinition {
       index: typeof routes['search.search.index']
     }
   }
+  notifications: {
+    notifications: {
+      index: typeof routes['notifications.notifications.index']
+      unreadCount: typeof routes['notifications.notifications.unread_count']
+      markAllRead: typeof routes['notifications.notifications.mark_all_read']
+      markRead: typeof routes['notifications.notifications.mark_read']
+    }
+  }
   workspaces: {
     workspaces: {
       index: typeof routes['workspaces.workspaces.index']

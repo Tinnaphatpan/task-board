@@ -142,6 +142,27 @@ export class LabelSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class NotificationSchema extends BaseModel {
+  static $columns = ['createdAt', 'data', 'id', 'message', 'read', 'type', 'updatedAt', 'userId'] as const
+  $columns = NotificationSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare data: any | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare message: string
+  @column()
+  declare read: boolean | null
+  @column()
+  declare type: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number | null
+}
+
 export class SubtaskSchema extends BaseModel {
   static $columns = ['completed', 'createdAt', 'id', 'position', 'taskId', 'title', 'updatedAt'] as const
   $columns = SubtaskSchema.$columns

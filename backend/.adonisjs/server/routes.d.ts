@@ -13,6 +13,10 @@ export type ScannedRoutes = {
     'profile.profile.upload_avatar': { paramsTuple?: []; params?: {} }
     'users.users.index': { paramsTuple?: []; params?: {} }
     'search.search.index': { paramsTuple?: []; params?: {} }
+    'notifications.notifications.index': { paramsTuple?: []; params?: {} }
+    'notifications.notifications.unread_count': { paramsTuple?: []; params?: {} }
+    'notifications.notifications.mark_all_read': { paramsTuple?: []; params?: {} }
+    'notifications.notifications.mark_read': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'workspaces.workspaces.index': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.store': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -59,6 +63,8 @@ export type ScannedRoutes = {
     'profile.profile.show': { paramsTuple?: []; params?: {} }
     'users.users.index': { paramsTuple?: []; params?: {} }
     'search.search.index': { paramsTuple?: []; params?: {} }
+    'notifications.notifications.index': { paramsTuple?: []; params?: {} }
+    'notifications.notifications.unread_count': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.index': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.boards.index': { paramsTuple?: []; params?: {} }
@@ -79,6 +85,8 @@ export type ScannedRoutes = {
     'profile.profile.show': { paramsTuple?: []; params?: {} }
     'users.users.index': { paramsTuple?: []; params?: {} }
     'search.search.index': { paramsTuple?: []; params?: {} }
+    'notifications.notifications.index': { paramsTuple?: []; params?: {} }
+    'notifications.notifications.unread_count': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.index': { paramsTuple?: []; params?: {} }
     'workspaces.workspaces.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.boards.index': { paramsTuple?: []; params?: {} }
@@ -118,6 +126,11 @@ export type ScannedRoutes = {
     'boards.columns.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.tasks.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
+  PATCH: {
+    'notifications.notifications.mark_all_read': { paramsTuple?: []; params?: {} }
+    'notifications.notifications.mark_read': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'boards.subtasks.toggle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+  }
   DELETE: {
     'workspaces.workspaces.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.boards.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -129,9 +142,6 @@ export type ScannedRoutes = {
     'boards.comments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.subtasks.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'boards.task_attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-  }
-  PATCH: {
-    'boards.subtasks.toggle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

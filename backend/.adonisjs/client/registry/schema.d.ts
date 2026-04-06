@@ -115,6 +115,54 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/search_controller').default['index']>>>
     }
   }
+  'notifications.notifications.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/notifications'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['index']>>>
+    }
+  }
+  'notifications.notifications.unread_count': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/notifications/unread-count'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['unreadCount']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['unreadCount']>>>
+    }
+  }
+  'notifications.notifications.mark_all_read': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/notifications/read-all'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['markAllRead']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['markAllRead']>>>
+    }
+  }
+  'notifications.notifications.mark_read': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/notifications/:id/read'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['markRead']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['markRead']>>>
+    }
+  }
   'workspaces.workspaces.index': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/workspaces'

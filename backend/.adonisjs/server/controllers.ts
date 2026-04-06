@@ -13,6 +13,7 @@ export const controllers = {
   Comments: () => import('#controllers/comments_controller'),
   Labels: () => import('#controllers/labels_controller'),
   NewAccount: () => import('#controllers/new_account_controller'),
+  Notifications: () => import('#controllers/notifications_controller'),
   Profile: () => import('#controllers/profile_controller'),
   Search: () => import('#controllers/search_controller'),
   Subtasks: () => import('#controllers/subtasks_controller'),
