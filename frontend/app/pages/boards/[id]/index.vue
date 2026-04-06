@@ -110,6 +110,13 @@ const showCreateLabel = ref(false)
 const newLabelForm = reactive({ name: '', color: '#6366f1' })
 const savingLabel = ref(false)
 
+// Dependencies
+interface DepTask { id: number; title: string; priority: string | null; columnId: number }
+const blockedBy = ref<DepTask[]>([])
+const blocking = ref<DepTask[]>([])
+const showDepPicker = ref(false)
+const depSearch = ref('')
+
 // Column modal
 const showColumnModal = ref(false)
 const columnForm = reactive({ name: '' })
@@ -280,6 +287,15 @@ async function openTaskDetail(task: Task) {
   taskLabelsMap.value[task.id] = labelsData
   showLabelPicker.value = false
   showCreateLabel.value = false
+  // Load dependencies
+  const [depBlockedBy, depBlocking] = await Promise.all([
+    get<DepTask[]>(`/api/v1/boards/tasks/${task.id}/dependencies`).catch(() => [] as DepTask[]),
+    get<DepTask[]>(`/api/v1/boards/tasks/${task.id}/blocking`).catch(() => [] as DepTask[]),
+  ])
+  blockedBy.value = depBlockedBy
+  blocking.value = depBlocking
+  showDepPicker.value = false
+  depSearch.value = ''
 }
 
 async function handleFileUpload(event: Event) {
@@ -441,6 +457,35 @@ async function deleteBoardLabel(label: Label) {
   }
   taskLabels.value = taskLabels.value.filter((l) => l.id !== label.id)
 }
+
+// Dependency functions
+async function addDependency(depTask: Task) {
+  if (!selectedTask.value) return
+  try {
+    await post(`/api/v1/boards/tasks/${selectedTask.value.id}/dependencies/${depTask.id}`, {})
+    blockedBy.value.push({ id: depTask.id, title: depTask.title, priority: depTask.priority, columnId: depTask.columnId })
+    showDepPicker.value = false
+    depSearch.value = ''
+  } catch {
+    // ignore duplicate errors silently
+  }
+}
+
+async function removeDependency(dep: DepTask) {
+  if (!selectedTask.value) return
+  await del(`/api/v1/boards/tasks/${selectedTask.value.id}/dependencies/${dep.id}`)
+  blockedBy.value = blockedBy.value.filter((d) => d.id !== dep.id)
+}
+
+const depSearchResults = computed(() => {
+  if (!depSearch.value.trim()) return []
+  const q = depSearch.value.toLowerCase()
+  const currentId = selectedTask.value?.id
+  return Object.values(tasksByColumn.value)
+    .flat()
+    .filter((t) => t.id !== currentId && t.title.toLowerCase().includes(q))
+    .slice(0, 8)
+})
 
 const isAdmin = computed(() => {
   const me = authStore.user
@@ -1077,6 +1122,62 @@ function formatShortDate(dateStr: string): string {
                       <button @click="showCreateLabel = false" class="text-gray-500 hover:text-white text-xs">ยกเลิก</button>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+            <!-- Dependencies -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-xs font-medium text-gray-400">Blocked by</label>
+                <button
+                  @click="showDepPicker = !showDepPicker; depSearch = ''"
+                  class="text-xs text-indigo-400 hover:text-indigo-300 transition"
+                >{{ showDepPicker ? 'ปิด' : '+ เพิ่ม' }}</button>
+              </div>
+
+              <div class="space-y-1 mb-2">
+                <div v-if="blockedBy.length === 0 && !showDepPicker" class="text-xs text-gray-600">ไม่มี dependencies</div>
+                <div
+                  v-for="dep in blockedBy"
+                  :key="dep.id"
+                  class="flex items-center gap-2 text-xs bg-gray-800 rounded-lg px-2 py-1.5 group"
+                >
+                  <span class="w-2 h-2 rounded-full bg-orange-500 shrink-0" />
+                  <span class="flex-1 text-gray-300 truncate">{{ dep.title }}</span>
+                  <button @click="removeDependency(dep)" class="text-gray-700 hover:text-red-400 opacity-0 group-hover:opacity-100 transition">✕</button>
+                </div>
+              </div>
+
+              <!-- Dep picker -->
+              <div v-if="showDepPicker" class="bg-gray-800 border border-gray-700 rounded-xl p-2">
+                <input
+                  v-model="depSearch"
+                  type="text"
+                  placeholder="ค้นหา task..."
+                  class="w-full px-2 py-1.5 rounded-lg bg-gray-900 border border-gray-600 text-xs text-white placeholder:text-gray-500 outline-none mb-2"
+                />
+                <div v-if="depSearchResults.length === 0 && depSearch" class="text-xs text-gray-500 px-1">ไม่พบ task</div>
+                <button
+                  v-for="task in depSearchResults"
+                  :key="task.id"
+                  @click="addDependency(task)"
+                  class="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-700 transition text-xs text-gray-300 text-left"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-gray-500 shrink-0" />
+                  {{ task.title }}
+                </button>
+              </div>
+
+              <!-- Blocking section -->
+              <div v-if="blocking.length > 0" class="mt-3">
+                <label class="text-xs font-medium text-gray-500 block mb-1">กำลัง block</label>
+                <div
+                  v-for="dep in blocking"
+                  :key="dep.id"
+                  class="flex items-center gap-2 text-xs bg-gray-800/50 rounded-lg px-2 py-1.5"
+                >
+                  <span class="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
+                  <span class="flex-1 text-gray-400 truncate">{{ dep.title }}</span>
                 </div>
               </div>
             </div>
