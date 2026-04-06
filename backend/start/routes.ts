@@ -1,6 +1,9 @@
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 import { controllers } from '#generated/controllers'
+import RateLimitMiddleware from '#middleware/rate_limit_middleware'
+
+const authRateLimit = () => new RateLimitMiddleware(10, 60_000)
 
 router.get('/', () => {
   return { hello: 'world' }
@@ -11,8 +14,8 @@ router
     // Auth
     router
       .group(() => {
-        router.post('signup', [controllers.NewAccount, 'store'])
-        router.post('login', [controllers.AccessToken, 'store'])
+        router.post('signup', [controllers.NewAccount, 'store']).use([authRateLimit()])
+        router.post('login', [controllers.AccessToken, 'store']).use([authRateLimit()])
         router.post('logout', [controllers.AccessToken, 'destroy']).use(middleware.auth())
       })
       .prefix('auth')
